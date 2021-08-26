@@ -13,6 +13,7 @@
     "start": "swc src -s -d ./dist && node dist/main.js",
     "start:dev": "nodemon --watch src/ --exec \"npx swc src -s -d ./dist && node dist/main.js\" -e ts",
     "start:prod": "node dist/main.js",
+    "migration:create": "MIKRO_ORM_MIGRATIONS_PATH=./src/migrations mikro-orm migration:create && swc ./src/migrations -d ./dist",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -21,11 +22,16 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@mikro-orm/cli": "^4.5.9",
+    "@mikro-orm/core": "^4.5.7",
+    "@mikro-orm/nestjs": "^4.3.0",
+    "@mikro-orm/postgresql": "^4.5.7",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/platform-fastify": "^8.0.6",
     "@nestjs/swagger": "^5.0.9",
+    "fastify": "^3.20.2",
     "fastify-swagger": "^4.9.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
@@ -87,5 +93,10 @@
       "\\.(css|less|scss)$": "<rootDir>/test/__mocks__/mocks.js",
       "^~(.*)$": "<rootDir>/src/$1"
     }
+  },
+  "mikro-orm": {
+    "configPaths": [
+      "./dist/mikro-orm.config.js"
+    ]
   }
 }

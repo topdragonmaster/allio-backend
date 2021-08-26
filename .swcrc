@@ -2,7 +2,8 @@
   "sourceMaps": false,
   "module": {
     "type": "commonjs",
-    "strict": true
+    "strict": true,
+    "noInterop": true
   },
   "jsc": {
     "target": "es2019",

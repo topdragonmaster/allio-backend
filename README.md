@@ -12,12 +12,6 @@ Allio App Main Backend
 $ nvm use || nvm install
 ```
 
-## Installation
-
-```bash
-$ pnpm install
-```
-
 ## Running the app
 
 ```bash
