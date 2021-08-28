@@ -1,19 +1,14 @@
 import { Collection, Entity, Enum, OneToMany, Property } from '@mikro-orm/core';
 import { Base } from '../shared/base.entity';
-import { UserRole } from './userRole.entity';
+import { UserRole } from '../user-role/userRole.entity';
 
 @Entity()
 export class User extends Base<User, 'uuid'> {
-  @Property()
-  firstName!: string;
+  @Property({ length: 100, unique: true })
+  username!: string;
 
-  @Property()
-  lastName!: string;
-
-  @Property({ name: 'fullName' })
-  getFullName() {
-    return `${this.firstName} ${this.lastName}`;
-  }
+  @Property({ unique: true })
+  email!: string;
 
   @Enum({ items: () => UserStatus, lazy: true })
   status!: UserStatus;

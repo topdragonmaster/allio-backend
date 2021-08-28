@@ -12,9 +12,9 @@
 ## Run Migration Script
 
 - Migration script should be run manually to update the table schema of the database.
-- Make sure the migration js files in `dist/migrations` have 1 to 1 relationship to the ts files in `src/migrations`; if not, run the compiler again
+- Make sure the migration js files in `dist/migrations/` have 1 to 1 relationship to the ts files in `migrations/`; if not, run the compiler again
   ```sh
-  npx swc src/migrations -d ./dist
+  npx swc migrations -d ./dist/migrations
   ```
 - To up the version of migration script, run
   ```sh
@@ -25,10 +25,10 @@
 
 - This is not recommended and all migration should be backward compatible!
 - Down migration need to be manually implemented
-- add a `down` method to the migration class in the migration ts file in `src/migrations`
-- compile the migration ts files to js files in `dist/migrations`
+- add a `down` method to the migration class in the migration ts file in `migrations/`
+- compile the migration ts files to js files in `dist/migrations/`
   ```sh
-  npx swc src/migrations -d ./dist
+  npx swc migrations -d ./dist/migrations
   ```
 - to down the version of migration, run
   ```sh

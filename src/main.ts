@@ -9,6 +9,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
+import { IS_PROD } from './shared/constants';
 
 const storage = new AsyncLocalStorage<EntityManager>();
 
@@ -18,7 +19,7 @@ async function bootstrap() {
     AppModule,
     fastifyAdapter,
     {
-      logger: ['debug'],
+      logger: IS_PROD ? ['warn', 'error'] : ['debug'],
     }
   );
 
