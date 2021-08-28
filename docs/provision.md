@@ -2,19 +2,19 @@
 
 [Install nvm](https://github.com/nvm-sh/nvm#installing-and-updating) if not yet installed
 
-```bash
+```sh
 $ nvm use || nvm install
 ```
 
 ## Install pnpm package manager
 
-```bash
+```sh
 npm i -g pnpm
 ```
 
 ## Install npm dependencies
 
-```bash
+```sh
 $ pnpm install
 ```
 
@@ -40,7 +40,13 @@ $ pnpm install
 
 ## Environment Variables
 
-- copy the `.env.example` file to `.env`
+- copy the `.env.example` file to `.env` and modify the permission
+
+  ```sh
+  cp .env.example .env
+  chmod 640 .env
+  ```
+
 - modify the `user` and `password` accordinly in the `.env` file
 
 ```
