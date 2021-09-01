@@ -7,9 +7,10 @@ import {
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { MikroORM } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/postgresql';
+import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { IS_PROD } from './shared/constants';
+
+global['fetch'] = require('node-fetch');
 
 const storage = new AsyncLocalStorage<EntityManager>();
 

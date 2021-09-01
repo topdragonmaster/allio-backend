@@ -38,6 +38,21 @@ $ pnpm install
   CREATE EXTENSION "uuid-ossp";
   ```
 
+## Secrets
+
+- create `secrets/`
+
+  ```sh
+  mkdir -p ./secrets;
+  ```
+
+- add secret key/value paris, using `key` as filename and `value` as content. Modify the `value` below accordingly.
+
+  ```sh
+  echo "client_id" > secrets/COGNITO_CLIENT_ID;
+  chmod 640 secrets/*
+  ```
+
 ## Environment Variables
 
 - copy the `.env.example` file to `.env` and modify the permission
