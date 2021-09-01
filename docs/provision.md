@@ -18,6 +18,30 @@ npm i -g pnpm
 $ pnpm install
 ```
 
+## Environment Variables
+
+- copy the `.env.example` file to `.env` and modify the permission
+
+  ```sh
+  cp .env.example .env
+  chmod 640 .env
+  ```
+
+## Secrets
+
+- create `secrets/`
+
+  ```sh
+  mkdir -p ./secrets;
+  ```
+
+- add secret key/value paris, using `key` as filename and `value` as content.
+
+  ```sh
+  echo "client_id" > secrets/COGNITO_CLIENT_ID;
+  chmod 640 secrets/*
+  ```
+
 ## PostgreSQL
 
 - follow [postgresql setup on mac](https://www.sqlshack.com/setting-up-a-postgresql-database-on-mac/) to run the PostgreSQL service.
@@ -34,40 +58,28 @@ $ pnpm install
   \c allio
   ```
 - enable PostgreSQL uuid-ossp module function
+
   ```sql
   CREATE EXTENSION "uuid-ossp";
   ```
 
-## Secrets
-
-- create `secrets/`
-
-  ```sh
-  mkdir -p ./secrets;
-  ```
-
-- add secret key/value paris, using `key` as filename and `value` as content. Modify the `value` below accordingly.
-
-  ```sh
-  echo "client_id" > secrets/COGNITO_CLIENT_ID;
-  chmod 640 secrets/*
-  ```
-
-## Environment Variables
-
-- copy the `.env.example` file to `.env` and modify the permission
-
-  ```sh
-  cp .env.example .env
-  chmod 640 .env
-  ```
-
-- modify the `user` and `password` accordinly in the `.env` file
+- modify the values of `MIKRO_ORM_USER` and `MIKRO_ORM_PASSWORD` accordinly in the `.env` file
 
 ```
 MIKRO_ORM_USER = user
 MIKRO_ORM_PASSWORD = password
 ```
+
+## AWS Cognito
+
+- follow [this article](https://medium.com/weekly-webtips/authentication-with-aws-cognito-and-nestjs-9f04c766f3fd) to find the config for `Allio-Backend` user pool in Allio's AWS Cognito account (in us-west-2).
+
+- Replace the corresponding secrets and env variable values
+  ```
+  COGNITO_CLIENT_ID
+  COGNITO_USER_POOL_ID
+  COGNITO_REGION
+  ```
 
 ## FAQ
 
