@@ -7,10 +7,13 @@ import {
   Post,
   Put,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
+import { NoJwt } from './decorator/nonJwt';
 import { AwsCognitoErrorCode } from './errorCode.enum';
+import { JwtAuthGuard } from './jwt-auth.guard';
 import {
   AuthenticateRequestDTO,
   RegisterRequestDTO,
@@ -20,6 +23,7 @@ import {
   ResetPasswordRequestDTO,
 } from './types';
 
+@UseGuards(JwtAuthGuard)
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -28,6 +32,7 @@ export class AuthController {
     this.logger = new Logger(AuthController.name);
   }
 
+  @NoJwt()
   @Post('register')
   async register(@Body() registerRequest: RegisterRequestDTO) {
     try {
@@ -38,6 +43,7 @@ export class AuthController {
     }
   }
 
+  @NoJwt()
   @Post('login')
   async login(@Body() authenticateRequest: AuthenticateRequestDTO) {
     try {
@@ -51,6 +57,7 @@ export class AuthController {
     }
   }
 
+  @NoJwt()
   @Post('confirm')
   async confirm(@Body() validateRequest: ConfirmRegistrationRequestDTO) {
     try {
@@ -61,6 +68,7 @@ export class AuthController {
     }
   }
 
+  @NoJwt()
   @Post('resend')
   async resend(
     @Body() resendConfirmationCodeRequest: GeneralIdentityRequestDTO
@@ -75,6 +83,7 @@ export class AuthController {
     }
   }
 
+  @NoJwt()
   @Put('password')
   async changePassword(
     @Body() { identity, oldPassword, newPassword }: ChangePasswordRequestDTO
@@ -98,6 +107,7 @@ export class AuthController {
     }
   }
 
+  @NoJwt()
   @Post('forget-password')
   async forgetPassword(
     @Body() forgetPasswordRequest: GeneralIdentityRequestDTO
@@ -110,6 +120,7 @@ export class AuthController {
     }
   }
 
+  @NoJwt()
   @Post('reset-password')
   async resetPassword(@Body() resetPasswordRequest: ResetPasswordRequestDTO) {
     try {
@@ -120,6 +131,7 @@ export class AuthController {
     }
   }
 
+  @NoJwt()
   @Delete('delete-account')
   async deleteAccount(@Body() deleteAccountRequest: AuthenticateRequestDTO) {
     try {
@@ -133,6 +145,7 @@ export class AuthController {
     }
   }
 
+  @NoJwt()
   @Post('logout')
   async logout(@Body() logoutRequest: AuthenticateRequestDTO) {
     try {

@@ -28,6 +28,7 @@ async function bootstrap() {
     .setTitle('Main Backend')
     .setDescription('Main Backend of Allio')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, documentConfig);
   SwaggerModule.setup('docs', app, document);
