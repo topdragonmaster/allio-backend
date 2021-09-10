@@ -1,4 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Ability } from '@casl/ability';
+import { CognitoUserPool } from 'amazon-cognito-identity-js';
+import { ExecutionContext } from '@nestjs/common';
 
 export class RegisterRequestDTO {
   @ApiProperty({
@@ -107,4 +110,39 @@ export class ResetPasswordRequestDTO {
     description: 'new password',
   })
   newPassword: string;
+}
+
+export enum Action {
+  MANAGE = 'manage',
+  CREATE = 'create',
+  READ = 'read',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  ACCESS = 'access',
+  MODIFY = 'modify',
+}
+
+export type Subjects = typeof CognitoUserPool | CognitoUserPool | 'all';
+
+export type AppAbility = Ability<[Action, Subjects]>;
+
+type PolicyHandlerCallback = (
+  ability: AppAbility,
+  context: ExecutionContext
+) => boolean;
+
+interface PolicyHandlerObject {
+  handle: PolicyHandlerCallback;
+}
+
+export type PolicyHandler = PolicyHandlerObject | PolicyHandlerCallback;
+
+export interface RequestUserInfo {
+  uuid: string;
+  identity: string;
+  roles: Roles[];
+}
+
+export enum Roles {
+  ADMIN = 'Admin',
 }

@@ -16,6 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       audience: authConfig.clientId,
       issuer: authConfig.authority,
       algorithms: ['RS256'],
+      ignoreExpiration: false,
       secretOrKeyProvider: passportJwtSecret({
         cache: true,
         rateLimit: true,
@@ -26,6 +27,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   public async validate(payload: any) {
-    return !!payload.sub;
+    return this.authService.validateUserWithIdTokenPayload(payload);
   }
 }

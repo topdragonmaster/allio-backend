@@ -15,6 +15,7 @@ import {
   GeneralIdentityRequestDTO,
   ChangePasswordRequestDTO,
   ResetPasswordRequestDTO,
+  RequestUserInfo,
 } from './types';
 import { promisify } from 'util';
 
@@ -169,5 +170,25 @@ export class AuthService {
         },
       });
     });
+  }
+
+  async validateUserWithIdTokenPayload(
+    payload: Record<string, any>
+  ): Promise<RequestUserInfo> {
+    if (
+      payload.token_use !== 'id' ||
+      // must be an access token from the AWS Cognito
+      this.authConfig.authority !== payload.iss ||
+      // must be issued from the same AWS Cognito region
+      this.authConfig.clientId !== payload.aud
+      // must refer to the same AWS Cognito user pool
+    ) {
+      return;
+    }
+    return {
+      uuid: payload?.sub,
+      identity: payload?.email,
+      roles: payload?.['cognito:groups'] ?? [],
+    };
   }
 }

@@ -26,8 +26,6 @@ export class UserService {
       ...criteria,
       status,
     } as FilterQuery<User>;
-    console.log(where);
-    console.log(populate);
     return this.userRepository.findOne(where, populate);
   }
 

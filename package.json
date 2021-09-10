@@ -22,6 +22,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@casl/ability": "^5.4.3",
     "@mikro-orm/cli": "^4.5.9",
     "@mikro-orm/core": "^4.5.7",
     "@mikro-orm/nestjs": "^4.3.0",

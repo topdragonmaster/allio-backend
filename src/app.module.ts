@@ -9,6 +9,7 @@ import config from './mikro-orm.config';
 import { UserRoleModule } from './user-role/userRole.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { CaslAbilityFactory } from './auth/casl-ability.factory';
 
 @Module({
   imports: [
@@ -23,6 +24,6 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CaslAbilityFactory],
 })
 export class AppModule {}

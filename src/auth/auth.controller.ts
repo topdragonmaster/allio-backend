@@ -3,17 +3,22 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Logger,
   Post,
   Put,
+  Request,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CognitoUserPool } from 'amazon-cognito-identity-js';
+import { RequestObject } from '../shared/types';
 import { AuthService } from './auth.service';
-import { NoJwt } from './decorator/nonJwt';
+import { CaslAbilityFactory } from './casl-ability.factory';
+import { NoJwt } from './decorator/noJwt';
 import { AwsCognitoErrorCode } from './errorCode.enum';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { PoliciesGuard } from './policies.guard';
 import {
   AuthenticateRequestDTO,
   RegisterRequestDTO,
@@ -21,14 +26,18 @@ import {
   GeneralIdentityRequestDTO,
   ChangePasswordRequestDTO,
   ResetPasswordRequestDTO,
+  Action,
 } from './types';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(PoliciesGuard)
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   private readonly logger: Logger;
-  constructor(private readonly authService: AuthService) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly caslAbilityFactory: CaslAbilityFactory
+  ) {
     this.logger = new Logger(AuthController.name);
   }
 
@@ -83,11 +92,22 @@ export class AuthController {
     }
   }
 
-  @NoJwt()
+  @ApiBearerAuth()
   @Put('password')
   async changePassword(
-    @Body() { identity, oldPassword, newPassword }: ChangePasswordRequestDTO
+    @Body() { identity, oldPassword, newPassword }: ChangePasswordRequestDTO,
+    @Request() req: RequestObject
   ) {
+    const ability = await this.caslAbilityFactory.createForRequestUser({
+      requestUser: req.user,
+      isMatchedUser: identity === req.user?.identity,
+    });
+    const canChangePassword = ability.can(Action.MODIFY, CognitoUserPool);
+
+    if (!canChangePassword) {
+      throw new ForbiddenException();
+    }
+
     try {
       const { user } = await this.authService.authenticateUser({
         identity,

@@ -1,5 +1,8 @@
 import { Options } from '@mikro-orm/core';
 import { IS_PROD } from './shared/constants';
+import { Logger } from '@nestjs/common';
+
+const logger = new Logger('Mikro-ORM');
 
 const config = {
   forceUtcTimezone: true,
@@ -7,6 +10,7 @@ const config = {
   type: 'postgresql',
   autoLoadEntities: true,
   debug: !IS_PROD,
+  logger: logger.debug,
 } as Options;
 
 export default config;
