@@ -39,3 +39,7 @@ lerna-debug.log*
 
 # Secrets
 secrets
+
+# local script
+start.sh
+cleanup.sh

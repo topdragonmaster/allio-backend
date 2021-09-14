@@ -1,0 +1,21 @@
+# change the env var as needed
+export NAMESPACE=allio-development
+
+# comment/uncomment the lines to enable custom features
+shell/kubernetes/delete-secret.sh
+shell/kubernetes/delete-docker-config.sh
+
+# delete configmaps
+shell/kubernetes/delete-configmap.sh
+
+# delete service and deployment of nest-backend
+shell/kubernetes/delete-nest-backen.sh
+
+# delete service and deployment of postgres
+shell/kubernetes/delete-postgres.sh
+
+# delete persistent volume
+shell/kubernetes/delete-pv.sh
+
+# delete namespace
+shell/kubernetes/delete-namespace.sh
