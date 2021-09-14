@@ -3,9 +3,12 @@
 ## pre-requisite
 
 - Install the following tools
+
   - Kubernetes
   - minikube
   - docker
+
+- follow [`docker.md`](./docker.md#setup) to setup the docker registry credentials
 
 ## usage
 
