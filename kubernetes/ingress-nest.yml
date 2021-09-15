@@ -15,4 +15,4 @@ spec:
               service:
                 name: web
                 port:
-                  number: 4000
+                  number: 3000
