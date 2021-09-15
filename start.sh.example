@@ -1,7 +1,8 @@
 # change the env var as needed
-export DOCKER_IMAGE_TAG=registry.gitlab.com/alliofintech/mobile-app/main-backend/allio-main-backend-dev:latest
-export DOCKER_CONTAINER_NAME=allio-backend-dev
-export NAMESPACE=allio-development
+export DEPLOY_ENV=dev # can switch between dev and prod
+export DOCKER_IMAGE_TAG=registry.gitlab.com/alliofintech/mobile-app/main-backend/allio-main-backend-$DEPLOY_ENV:latest
+export DOCKER_CONTAINER_NAME=allio-backend-$DEPLOY_ENV
+export NAMESPACE=allio-$DEPLOY_ENV
 export DOCKER_REGISTRY_USERNAME=username
 export DOCKER_REGISTRY_PASSWORD=password
 export DOCKER_REGISTRY_EMAIL=john.smith@example.com

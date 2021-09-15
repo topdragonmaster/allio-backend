@@ -1,5 +1,6 @@
 # change the env var as needed
-export NAMESPACE=allio-development
+export DEPLOY_ENV=dev # can switch between dev and prod
+export NAMESPACE=allio-$DEPLOY_ENV
 
 # comment/uncomment the lines to enable custom features
 shell/kubernetes/delete-secret.sh
@@ -9,7 +10,7 @@ shell/kubernetes/delete-docker-config.sh
 shell/kubernetes/delete-configmap.sh
 
 # delete service and deployment of nest-backend
-shell/kubernetes/delete-nest-backen.sh
+shell/kubernetes/delete-nest-backend.sh
 
 # delete service and deployment of postgres
 shell/kubernetes/delete-postgres.sh
