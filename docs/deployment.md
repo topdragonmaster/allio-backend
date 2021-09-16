@@ -140,8 +140,15 @@
 
 ### Create Kubernetes Cluster
 
-- run the start script
+- run the start script on EC2
   ```sh
   cd ~/app/
   sh start.sh
+  ```
+
+### (Optional) Tear Down Kubeadm
+
+- run the following shell commands on EC2
+  ```sh
+  sudo kubeadm reset
   ```
