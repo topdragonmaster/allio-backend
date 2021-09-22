@@ -3,6 +3,7 @@ import { AuthConfig } from './auth.config';
 import { Logger } from '@nestjs/common';
 import {
   AuthenticationDetails,
+  CognitoRefreshToken,
   CognitoUser,
   CognitoUserAttribute,
   CognitoUserPool,
@@ -16,6 +17,7 @@ import {
   ChangePasswordRequestDTO,
   ResetPasswordRequestDTO,
   RequestUserInfo,
+  TokenResponseDTO,
 } from './types';
 import { promisify } from 'util';
 
@@ -189,6 +191,23 @@ export class AuthService {
       uuid: payload?.sub,
       identity: payload?.email,
       roles: payload?.['cognito:groups'] ?? [],
+    };
+  }
+
+  async refreshSession(refreshToken: string): Promise<TokenResponseDTO> {
+    const cognitoRefreshToken = new CognitoRefreshToken({
+      RefreshToken: refreshToken,
+    });
+    const cognitoUser = this.userPool.getCurrentUser();
+
+    const refreshedSession = await promisify<
+      (cognitoRefreshToken: CognitoRefreshToken) => Promise<CognitoUserSession>
+    >(cognitoUser.refreshSession.bind(cognitoUser))(cognitoRefreshToken);
+
+    return {
+      idToken: refreshedSession.getIdToken().getJwtToken(),
+      accessToken: refreshedSession.getAccessToken().getJwtToken(),
+      refreshToken: refreshedSession.getRefreshToken().getToken(),
     };
   }
 }

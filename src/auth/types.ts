@@ -112,6 +112,34 @@ export class ResetPasswordRequestDTO {
   newPassword: string;
 }
 
+export class RefreshRequestDTO {
+  @ApiProperty({
+    example: 'eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ',
+    description: 'AWS Cognito refresh token',
+  })
+  refreshToken: string;
+}
+
+export class TokenResponseDTO {
+  @ApiProperty({
+    example: 'eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ',
+    description: 'AWS Cognito id token',
+  })
+  idToken: string;
+
+  @ApiProperty({
+    example: 'eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ',
+    description: 'AWS Cognito access token',
+  })
+  accessToken: string;
+
+  @ApiProperty({
+    example: 'eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ',
+    description: 'AWS Cognito refresh token',
+  })
+  refreshToken: string;
+}
+
 export enum Action {
   MANAGE = 'manage',
   CREATE = 'create',

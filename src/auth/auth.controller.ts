@@ -27,6 +27,7 @@ import {
   ChangePasswordRequestDTO,
   ResetPasswordRequestDTO,
   Action,
+  RefreshRequestDTO,
 } from './types';
 
 @UseGuards(PoliciesGuard)
@@ -176,6 +177,17 @@ export class AuthController {
       if (err.code === AwsCognitoErrorCode.NotAuthorizedException) {
         throw new UnauthorizedException(err.message);
       }
+      throw new BadRequestException(err.message);
+    }
+  }
+
+  @NoJwt()
+  @Post('refresh')
+  async refresh(@Body() { refreshToken }: RefreshRequestDTO) {
+    try {
+      return await this.authService.refreshSession(refreshToken);
+    } catch (err) {
+      this.logger.debug(this.logout.name, err);
       throw new BadRequestException(err.message);
     }
   }
