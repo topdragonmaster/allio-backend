@@ -3,11 +3,13 @@ import { AuthConfig } from './auth.config';
 import { Logger } from '@nestjs/common';
 import {
   AuthenticationDetails,
+  CodeDeliveryDetails,
   CognitoRefreshToken,
   CognitoUser,
   CognitoUserAttribute,
   CognitoUserPool,
   CognitoUserSession,
+  ISignUpResult,
 } from 'amazon-cognito-identity-js';
 import {
   AuthenticateRequestDTO,
@@ -18,8 +20,11 @@ import {
   ResetPasswordRequestDTO,
   RequestUserInfo,
   TokenResponseDTO,
+  codeDeliveryDetailsDTO,
 } from './types';
 import { promisify } from 'util';
+
+const SUCCESS = 'SUCCESS';
 
 @Injectable()
 export class AuthService {
@@ -42,16 +47,9 @@ export class AuthService {
 
   async registerUser({
     password,
-    phone_number,
     ...userInfo
-  }: RegisterRequestDTO) {
-    const extractedUserInfo: Omit<
-      RegisterRequestDTO,
-      'password' | 'phone_number'
-    > & { phone_number?: string } = userInfo;
-    if (phone_number) {
-      extractedUserInfo.phone_number = `+${phone_number}`;
-    }
+  }: RegisterRequestDTO): Promise<ISignUpResult> {
+    const extractedUserInfo: Omit<RegisterRequestDTO, 'password'> = userInfo;
     const userAttributes = Object.entries(extractedUserInfo).map(
       ([Name, Value]) =>
         new CognitoUserAttribute({
@@ -93,13 +91,24 @@ export class AuthService {
   async confirmRegistration({ identity, code }: ConfirmRegistrationRequestDTO) {
     const user = this.getUser(identity);
 
-    return promisify(user.confirmRegistration.bind(user))(code, true);
+    const result = await promisify(user.confirmRegistration.bind(user))(
+      code,
+      true
+    );
+
+    return result === SUCCESS;
   }
 
   async resendConfirmationCode({ identity }: GeneralIdentityRequestDTO) {
     const user = this.getUser(identity);
 
-    return promisify(user.resendConfirmationCode.bind(user))();
+    const {
+      CodeDeliveryDetails: codeDeliveryDetails,
+    }: { CodeDeliveryDetails: CodeDeliveryDetails } = await promisify(
+      user.resendConfirmationCode.bind(user)
+    )();
+
+    return codeDeliveryDetails;
   }
 
   async getUserAttributes(user: CognitoUser) {
@@ -121,12 +130,18 @@ export class AuthService {
     oldPassword,
     newPassword,
   }: Omit<ChangePasswordRequestDTO, 'identity'> & { user: CognitoUser }) {
-    return promisify(user.changePassword.bind(user))(oldPassword, newPassword);
+    const result = await promisify(user.changePassword.bind(user))(
+      oldPassword,
+      newPassword
+    );
+    return result === SUCCESS;
   }
 
   async forgotPassword({ identity }: GeneralIdentityRequestDTO) {
     const user = this.getUser(identity);
-    return new Promise<any>((resolve, reject) => {
+    const { CodeDeliveryDetails: codeDeliveryDetails } = await new Promise<{
+      CodeDeliveryDetails: CodeDeliveryDetails;
+    }>((resolve, reject) => {
       user.forgotPassword({
         onSuccess: (data) => {
           resolve(data);
@@ -136,6 +151,7 @@ export class AuthService {
         },
       });
     });
+    return codeDeliveryDetails;
   }
 
   async resetPassword({
@@ -144,17 +160,19 @@ export class AuthService {
     newPassword,
   }: ResetPasswordRequestDTO) {
     const user = this.getUser(identity);
-    return new Promise<string>((resolve, reject) => {
+    const result = await new Promise<string>((resolve, reject) => {
       user.confirmPassword(code, newPassword, {
         onSuccess: (message) => resolve(message),
         onFailure: (err) => reject(err),
       });
     });
+    return result === SUCCESS;
   }
 
   async deleteAccount(deleteAccountRequest: AuthenticateRequestDTO) {
     const { user } = await this.authenticateUser(deleteAccountRequest);
-    return promisify(user.deleteUser.bind(user))();
+    const result: string = await promisify(user.deleteUser.bind(user))();
+    return result === SUCCESS;
   }
 
   async signOut(user: CognitoUser) {
@@ -162,7 +180,7 @@ export class AuthService {
   }
 
   async signOutEverywhere(user: CognitoUser) {
-    return new Promise<string>((resolve, reject) => {
+    const result = await new Promise<string>((resolve, reject) => {
       user.globalSignOut({
         onSuccess: (message) => {
           resolve(message);
@@ -172,6 +190,7 @@ export class AuthService {
         },
       });
     });
+    return result === SUCCESS;
   }
 
   async validateUserWithIdTokenPayload(
@@ -194,7 +213,7 @@ export class AuthService {
     };
   }
 
-  async refreshSession(refreshToken: string): Promise<TokenResponseDTO> {
+  async refreshSession(refreshToken: string): Promise<CognitoUserSession> {
     const cognitoRefreshToken = new CognitoRefreshToken({
       RefreshToken: refreshToken,
     });
@@ -204,10 +223,26 @@ export class AuthService {
       (cognitoRefreshToken: CognitoRefreshToken) => Promise<CognitoUserSession>
     >(cognitoUser.refreshSession.bind(cognitoUser))(cognitoRefreshToken);
 
+    return refreshedSession;
+  }
+
+  extractTokens(session: CognitoUserSession): TokenResponseDTO {
     return {
-      idToken: refreshedSession.getIdToken().getJwtToken(),
-      accessToken: refreshedSession.getAccessToken().getJwtToken(),
-      refreshToken: refreshedSession.getRefreshToken().getToken(),
+      idToken: session.getIdToken().getJwtToken(),
+      accessToken: session.getAccessToken().getJwtToken(),
+      refreshToken: session.getRefreshToken().getToken(),
+    };
+  }
+
+  extractCodeDeliveryDetails({
+    AttributeName: attributeName,
+    DeliveryMedium: deliveryMedium,
+    Destination: destination,
+  }: CodeDeliveryDetails): codeDeliveryDetailsDTO {
+    return {
+      attributeName,
+      deliveryMedium,
+      destination,
     };
   }
 }

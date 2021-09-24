@@ -46,7 +46,8 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerRequest: RegisterRequestDTO) {
     try {
-      return await this.authService.registerUser(registerRequest);
+      const result = await this.authService.registerUser(registerRequest);
+      return !!result.userSub;
     } catch (err) {
       this.logger.debug(this.register.name, err);
       throw new BadRequestException(err.message);
@@ -57,7 +58,10 @@ export class AuthController {
   @Post('login')
   async login(@Body() authenticateRequest: AuthenticateRequestDTO) {
     try {
-      return await this.authService.authenticateUser(authenticateRequest);
+      const { session } = await this.authService.authenticateUser(
+        authenticateRequest
+      );
+      return this.authService.extractTokens(session);
     } catch (err) {
       this.logger.debug(this.login.name, err);
       if (err.code === AwsCognitoErrorCode.NotAuthorizedException) {
@@ -84,9 +88,10 @@ export class AuthController {
     @Body() resendConfirmationCodeRequest: GeneralIdentityRequestDTO
   ) {
     try {
-      return await this.authService.resendConfirmationCode(
+      const codeDeliveryDetails = await this.authService.resendConfirmationCode(
         resendConfirmationCodeRequest
       );
+      return this.authService.extractCodeDeliveryDetails(codeDeliveryDetails);
     } catch (err) {
       this.logger.debug(this.resend.name, err);
       throw new BadRequestException(err.message);
@@ -134,7 +139,10 @@ export class AuthController {
     @Body() forgetPasswordRequest: GeneralIdentityRequestDTO
   ) {
     try {
-      return await this.authService.forgotPassword(forgetPasswordRequest);
+      const codeDeliveryDetails = await this.authService.forgotPassword(
+        forgetPasswordRequest
+      );
+      return this.authService.extractCodeDeliveryDetails(codeDeliveryDetails);
     } catch (err) {
       this.logger.debug(this.forgetPassword.name, err);
       throw new BadRequestException(err.message);
@@ -185,7 +193,8 @@ export class AuthController {
   @Post('refresh')
   async refresh(@Body() { refreshToken }: RefreshRequestDTO) {
     try {
-      return await this.authService.refreshSession(refreshToken);
+      const session = await this.authService.refreshSession(refreshToken);
+      return this.authService.extractTokens(session);
     } catch (err) {
       this.logger.debug(this.logout.name, err);
       throw new BadRequestException(err.message);

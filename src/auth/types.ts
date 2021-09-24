@@ -6,15 +6,10 @@ import { ExecutionContext } from '@nestjs/common';
 export class RegisterRequestDTO {
   @ApiProperty({
     example: 'John',
-    description: 'A given name is required.',
+    description: 'nickname, optional',
+    required: false,
   })
-  given_name: string;
-
-  @ApiProperty({
-    example: 'Smith',
-    description: 'A family name is required',
-  })
-  family_name: string;
+  nickname?: string;
 
   @ApiProperty({
     example: 'john.smith@example.com',
@@ -30,10 +25,11 @@ export class RegisterRequestDTO {
   password: string;
 
   @ApiProperty({
-    example: '1415000000',
-    description: 'phone number that is after the plus sign',
+    example: '+1415000000',
+    description: 'phone number with the plus sign, optional',
+    required: false,
   })
-  phone_number?: number;
+  phone_number?: string;
 }
 
 export class AuthenticateRequestDTO {
@@ -138,6 +134,26 @@ export class TokenResponseDTO {
     description: 'AWS Cognito refresh token',
   })
   refreshToken: string;
+}
+
+export class codeDeliveryDetailsDTO {
+  @ApiProperty({
+    example: 'email',
+    description: 'attribute name',
+  })
+  attributeName: string;
+
+  @ApiProperty({
+    example: 'EMAIL',
+    description: 'delivery medium',
+  })
+  deliveryMedium: string;
+
+  @ApiProperty({
+    example: 'j***@e***.com',
+    description: 'destination',
+  })
+  destination: string;
 }
 
 export enum Action {
