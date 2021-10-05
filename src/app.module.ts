@@ -10,6 +10,11 @@ import { UserRoleModule } from './user-role/userRole.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CaslAbilityFactory } from './auth/casl-ability.factory';
+import { GraphQLModule } from '@nestjs/graphql';
+import { IS_PROD } from './shared/constants';
+import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
+import { join } from 'path';
+import { QuestionaireModule } from './questionaire/questionaire.module';
 
 @Module({
   imports: [
@@ -19,9 +24,16 @@ import { CaslAbilityFactory } from './auth/casl-ability.factory';
       cache: true,
     }),
     MikroOrmModule.forRoot(config),
-    UserModule,
-    UserRoleModule,
+    GraphQLModule.forRoot({
+      debug: !IS_PROD,
+      playground: false,
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      disableHealthCheck: true,
+      autoSchemaFile: join(process.cwd(), 'graphQL/schema.gql'),
+      sortSchema: true,
+    }),
     AuthModule,
+    QuestionaireModule,
   ],
   controllers: [AppController],
   providers: [AppService, CaslAbilityFactory],

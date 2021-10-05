@@ -3,7 +3,7 @@ import { Base } from '../shared/base.entity';
 import { UserRole } from '../user-role/userRole.entity';
 
 @Entity()
-export class User extends Base<User, 'uuid'> {
+export class User extends Base<User, 'id'> {
   @Property({ length: 100, unique: true })
   username!: string;
 

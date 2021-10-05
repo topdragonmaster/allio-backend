@@ -3,7 +3,7 @@ import { Base } from '../shared/base.entity';
 import { User } from '../user/user.entity';
 
 @Entity()
-export class UserRole extends Base<UserRole, 'uuid'> {
+export class UserRole extends Base<UserRole, 'id'> {
   @ManyToOne(() => User)
   user!: User;
 
