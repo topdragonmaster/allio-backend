@@ -6,15 +6,14 @@ import { AppService } from './app.service';
 import loadEnv from './config/loadEnv';
 import loadSecret from './config/loadSecret';
 import config from './mikro-orm.config';
-import { UserRoleModule } from './user-role/userRole.module';
-import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CaslAbilityFactory } from './auth/casl-ability.factory';
 import { GraphQLModule } from '@nestjs/graphql';
 import { IS_PROD } from './shared/constants';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import { join } from 'path';
-import { QuestionaireModule } from './questionaire/questionaire.module';
+import { InvestmentQuestionnaireModule } from './investment-questionnaire/investmentQuestionnaire.module';
+import { UserInvestmentQuestionnaireModule } from './user-investment-questionnaire/userInvestmentQuestionnaire.module';
 
 @Module({
   imports: [
@@ -33,7 +32,8 @@ import { QuestionaireModule } from './questionaire/questionaire.module';
       sortSchema: true,
     }),
     AuthModule,
-    QuestionaireModule,
+    InvestmentQuestionnaireModule,
+    UserInvestmentQuestionnaireModule,
   ],
   controllers: [AppController],
   providers: [AppService, CaslAbilityFactory],
