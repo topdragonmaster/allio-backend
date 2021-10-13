@@ -20,7 +20,7 @@ import {
   ResetPasswordRequestDTO,
   RequestUserInfo,
   TokenResponseDTO,
-  codeDeliveryDetailsDTO,
+  CodeDeliveryDetailsDTO,
 } from './types';
 import { promisify } from 'util';
 
@@ -238,7 +238,7 @@ export class AuthService {
     AttributeName: attributeName,
     DeliveryMedium: deliveryMedium,
     Destination: destination,
-  }: CodeDeliveryDetails): codeDeliveryDetailsDTO {
+  }: CodeDeliveryDetails): CodeDeliveryDetailsDTO {
     return {
       attributeName,
       deliveryMedium,

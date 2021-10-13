@@ -136,7 +136,7 @@ export class TokenResponseDTO {
   refreshToken: string;
 }
 
-export class codeDeliveryDetailsDTO {
+export class CodeDeliveryDetailsDTO {
   @ApiProperty({
     example: 'email',
     description: 'attribute name',
