@@ -10,5 +10,6 @@ import { CaslAbilityFactory } from './casl-ability.factory';
   imports: [PassportModule],
   providers: [AuthConfig, AuthService, JwtStrategy, CaslAbilityFactory],
   controllers: [AuthController],
+  exports: [CaslAbilityFactory],
 })
 export class AuthModule {}
