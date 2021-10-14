@@ -2,11 +2,12 @@ import {
   Collection,
   Entity,
   Enum,
+  LoadStrategy,
   OneToMany,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Base } from '../shared/base.entity';
 import { InvestmentQuestionnaireOption } from './investmentQuestionnaireOption.entity';
 
@@ -16,9 +17,9 @@ export class InvestmentQuestionnaire extends Base<
   InvestmentQuestionnaire,
   'id'
 > {
-  @Field()
-  @PrimaryKey()
-  id: number;
+  @Field(() => ID)
+  @PrimaryKey({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
+  id: string;
 
   @Field()
   @Property({ unique: true })
@@ -36,10 +37,12 @@ export class InvestmentQuestionnaire extends Base<
   @Property()
   order: number;
 
-  @OneToMany(
-    () => InvestmentQuestionnaireOption,
-    (option) => option.questionnaire
-  )
+  @Field(() => [InvestmentQuestionnaireOption])
+  @OneToMany({
+    entity: () => InvestmentQuestionnaireOption,
+    mappedBy: (option) => option.questionnaire,
+    strategy: LoadStrategy.JOINED,
+  })
   options = new Collection<InvestmentQuestionnaireOption>(this);
 }
 

@@ -11,8 +11,9 @@ type InvestmentQuestionnaire {
   active: Boolean!
   category: InvestmentQuestionnaireCategory!
   createdAt: DateTime!
-  id: Float!
+  id: ID!
   name: String!
+  options: [InvestmentQuestionnaireOption!]!
   order: Int!
   question: String!
   updatedAt: DateTime!
@@ -24,6 +25,31 @@ enum InvestmentQuestionnaireCategory {
   Value
 }
 
+type InvestmentQuestionnaireOption {
+  active: Boolean!
+  createdAt: DateTime!
+  description: String!
+  id: ID!
+  option: String!
+  updatedAt: DateTime!
+}
+
+type Mutation {
+  setUserInvestmentQuestionnaireAnswer(answer: String, questionnaireId: String!, selectedOptionId: String, userId: String): UserInvestmentQuestionnaireAnswer!
+}
+
 type Query {
-  findAllQuestionnaire: InvestmentQuestionnaire!
+  getAllQuestionnaire(id: ID): [InvestmentQuestionnaire!]!
+  getUserInvestmentQuestionnaireAnswers(questionnaireId: String, userId: String): [UserInvestmentQuestionnaireAnswer!]!
+}
+
+type UserInvestmentQuestionnaireAnswer {
+  active: Boolean!
+  answer: String
+  createdAt: DateTime!
+  id: ID!
+  questionnaireId: String!
+  selectedOptionId: String
+  updatedAt: DateTime!
+  userId: String!
 }

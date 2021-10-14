@@ -1,6 +1,7 @@
-import { Resolver, Query } from '@nestjs/graphql';
+import { Resolver, Query, Args } from '@nestjs/graphql';
 import { InvestmentQuestionnaire } from './investmentQuestionnaire.entity';
 import { InvestmentQuestionnaireService } from './investmentQuestionnaire.service';
+import { GetAllQuestionnaireArgs } from './dto/getAllQuestionnaire.args';
 
 @Resolver()
 export class InvestmentQuestionnaireResolver {
@@ -8,8 +9,8 @@ export class InvestmentQuestionnaireResolver {
     private investmentQuestionnaireService: InvestmentQuestionnaireService
   ) {}
 
-  @Query(() => InvestmentQuestionnaire)
-  async findAllQuestionnaire() {
-    return this.investmentQuestionnaireService.findAll();
+  @Query(() => [InvestmentQuestionnaire], { name: 'getAllQuestionnaire' })
+  async getAllQuestionnaire(@Args() args: GetAllQuestionnaireArgs) {
+    return this.investmentQuestionnaireService.findAll(args);
   }
 }

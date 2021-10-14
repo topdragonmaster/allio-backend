@@ -10,13 +10,22 @@ export abstract class Base<
 > extends BaseEntity<T, PK, P> {
   @Field()
   @Property({ default: true, name: 'active' })
-  active!: boolean;
+  active: boolean = true;
 
   @Field()
-  @Property()
+  @Property({
+    columnType: 'timestamptz',
+    nullable: false,
+    defaultRaw: 'CURRENT_TIMESTAMP',
+  })
   createdAt: Date = new Date();
 
   @Field()
-  @Property({ onUpdate: () => new Date() })
+  @Property({
+    columnType: 'timestamptz',
+    defaultRaw: 'CURRENT_TIMESTAMP',
+    onUpdate: () => new Date(),
+    nullable: false,
+  })
   updatedAt: Date = new Date();
 }

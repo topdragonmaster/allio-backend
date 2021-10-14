@@ -1,8 +1,9 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { InvestmentQuestionnaire } from '../investment-questionnaire/investmentQuestionnaire.entity';
 import { InvestmentQuestionnaireOption } from '../investment-questionnaire/investmentQuestionnaireOption.entity';
 import { Base } from '../shared/base.entity';
+import { GraphQLString } from 'graphql';
 
 @ObjectType()
 @Entity()
@@ -10,8 +11,8 @@ export class UserInvestmentQuestionnaireAnswer extends Base<
   UserInvestmentQuestionnaireAnswer,
   'id'
 > {
-  @Field()
-  @PrimaryKey()
+  @Field(() => ID)
+  @PrimaryKey({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
   id!: string;
 
   @Field()
@@ -21,10 +22,22 @@ export class UserInvestmentQuestionnaireAnswer extends Base<
   @ManyToOne(() => InvestmentQuestionnaire)
   questionnaire!: InvestmentQuestionnaire;
 
-  @Field()
+  @Field(() => GraphQLString)
+  @Property({ persist: false })
+  get questionnaireId(): string {
+    return this.questionnaire?.id;
+  }
+
+  @Field({ nullable: true })
   @Property({ nullable: true })
   answer?: string;
 
   @ManyToOne(() => InvestmentQuestionnaireOption, { nullable: true })
   selectedOption?: InvestmentQuestionnaireOption;
+
+  @Field(() => GraphQLString, { nullable: true })
+  @Property({ persist: false, nullable: true })
+  get selectedOptionId(): string {
+    return this.selectedOption?.id;
+  }
 }

@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Base } from '../shared/base.entity';
 import { InvestmentQuestionnaire } from './investmentQuestionnaire.entity';
 
@@ -9,9 +9,9 @@ export class InvestmentQuestionnaireOption extends Base<
   InvestmentQuestionnaireOption,
   'id'
 > {
-  @Field()
-  @PrimaryKey()
-  id: number;
+  @Field(() => ID)
+  @PrimaryKey({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
+  id: string;
 
   @ManyToOne(() => InvestmentQuestionnaire)
   questionnaire: InvestmentQuestionnaire;

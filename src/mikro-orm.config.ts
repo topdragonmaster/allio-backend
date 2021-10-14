@@ -10,7 +10,7 @@ const config = {
   type: 'postgresql',
   autoLoadEntities: true,
   debug: !IS_PROD,
-  logger: logger.debug,
+  logger: logger.debug.bind(logger),
 } as Options;
 
 export default config;
