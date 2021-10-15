@@ -43,6 +43,15 @@ type Query {
   getUserInvestmentQuestionnaireAnswers(questionnaireId: String, userId: String): [UserInvestmentQuestionnaireAnswer!]!
 }
 
+type RiskLevel {
+  active: Boolean!
+  createdAt: DateTime!
+  description: String!
+  id: ID!
+  riskLevel: Int!
+  updatedAt: DateTime!
+}
+
 type UserInvestmentQuestionnaireAnswer {
   active: Boolean!
   answer: String

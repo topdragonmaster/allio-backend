@@ -1,17 +1,16 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { GraphQLString } from 'graphql';
 
 @ArgsType()
 export class SetUserQuestionnaireAnswerArgs {
-  @Field(() => GraphQLString)
+  @Field()
   questionnaireId: string;
 
-  @Field(() => GraphQLString, { nullable: true })
+  @Field({ nullable: true })
   userId: string;
 
-  @Field(() => GraphQLString, { nullable: true })
+  @Field({ nullable: true })
   answer: string;
 
-  @Field(() => GraphQLString, { nullable: true })
+  @Field({ nullable: true })
   selectedOptionId: string;
 }

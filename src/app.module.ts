@@ -14,6 +14,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import { join } from 'path';
 import { InvestmentQuestionnaireModule } from './investment-questionnaire/investmentQuestionnaire.module';
 import { UserInvestmentQuestionnaireModule } from './user-investment-questionnaire/userInvestmentQuestionnaire.module';
+import { RiskLevelModule } from './risk-level/riskLevel.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UserInvestmentQuestionnaireModule } from './user-investment-questionnai
     AuthModule,
     InvestmentQuestionnaireModule,
     UserInvestmentQuestionnaireModule,
+    RiskLevelModule,
   ],
   controllers: [AppController],
   providers: [AppService, CaslAbilityFactory],
