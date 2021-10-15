@@ -26,6 +26,7 @@ $ pnpm run start:prod
 ## Api Document
 
 Swagger provides interactive api document at http://localhost:3000/docs.
+Graphql Studio provides interactive graphql client at http://lcoalhost:3000/graphql.
 
 ## Contribute
 

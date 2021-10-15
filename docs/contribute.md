@@ -33,7 +33,9 @@ $ pnpm run test:cov
 
 ## Api Document
 
-- Use interactive api document at http://localhost:3000/docs to test the api endpoints
+- Use interactive api document at http://localhost:3000/docs to test the api endpoints.
+- Use GraphQL Studio at http://localhost:3000/graphql to test the GraphQL resolvers.
+- Use `docs/graphQL-query` to document any example graphql query for frontend developers to reference.
 
 ## Database Migration
 
