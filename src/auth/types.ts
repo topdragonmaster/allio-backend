@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Ability } from '@casl/ability';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { ExecutionContext } from '@nestjs/common';
+import { UserInvestmentQuestionnaireAnswer } from '../user-investment-questionnaire/userInvestmentQuestionnaireAnswer.entity';
 
 export class RegisterRequestDTO {
   @ApiProperty({
@@ -166,7 +167,11 @@ export enum Action {
   MODIFY = 'modify',
 }
 
-export type Subjects = typeof CognitoUserPool | CognitoUserPool | 'all';
+export type Subjects =
+  | typeof CognitoUserPool
+  | CognitoUserPool
+  | typeof UserInvestmentQuestionnaireAnswer
+  | 'all';
 
 export type AppAbility = Ability<[Action, Subjects]>;
 

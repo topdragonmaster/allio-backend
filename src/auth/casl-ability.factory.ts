@@ -15,6 +15,7 @@ import {
   Roles,
   Subjects,
 } from './types';
+import { UserInvestmentQuestionnaireAnswer } from '../user-investment-questionnaire/userInvestmentQuestionnaireAnswer.entity';
 
 const resolveAction = createAliasResolver({
   [Action.MODIFY]: [Action.UPDATE, Action.DELETE],
@@ -45,6 +46,7 @@ export class CaslAbilityFactory {
       can(Action.READ, 'all');
       if (isMatchedUser === true) {
         // for matched user
+        can(Action.ACCESS, UserInvestmentQuestionnaireAnswer);
         can(Action.MODIFY, CognitoUserPool);
       }
     }
@@ -74,5 +76,19 @@ export class CaslAbilityFactory {
   execPolicyHanlerFactory(ability: AppAbility, context: ExecutionContext) {
     return (handler: PolicyHandler) =>
       this.execPolicyHandler({ handler, ability, context });
+  }
+
+  public async checkPolicyAccess(
+    requestUser: RequestUserInfo,
+    userId: string,
+    action: Action,
+    subject: Subjects
+  ): Promise<boolean> {
+    const ability = await this.createForRequestUser({
+      requestUser,
+      isMatchedUser: userId === requestUser.uuid,
+    });
+
+    return ability.can(action, subject);
   }
 }
