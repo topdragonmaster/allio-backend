@@ -41,6 +41,7 @@ type Mutation {
 type Query {
   getAllQuestionnaire(id: ID): [InvestmentQuestionnaire!]!
   getUserInvestmentQuestionnaireAnswers(questionnaireId: String, userId: String): [UserInvestmentQuestionnaireAnswer!]!
+  getUserRiskLevel(userId: String): UserRiskLevel!
 }
 
 type RiskLevel {
@@ -59,6 +60,15 @@ type UserInvestmentQuestionnaireAnswer {
   id: ID!
   questionnaireId: String!
   selectedOptionId: String
+  updatedAt: DateTime!
+  userId: String!
+}
+
+type UserRiskLevel {
+  active: Boolean!
+  createdAt: DateTime!
+  id: ID!
+  riskLevel: RiskLevel!
   updatedAt: DateTime!
   userId: String!
 }

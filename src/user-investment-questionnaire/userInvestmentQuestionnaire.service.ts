@@ -5,12 +5,8 @@ import { UserInvestmentQuestionnaireAnswer } from './userInvestmentQuestionnaire
 import { EntityRepository, QueryOrder } from '@mikro-orm/core';
 import { SetUserQuestionnaireAnswerArgs } from './dto/setUserQuestionnaireAnswer.args';
 import { InvestmentQuestionnaire } from '../investment-questionnaire/investmentQuestionnaire.entity';
-import {
-  QuestionnaireNotFound,
-  QuestionnaireOptionNotFound,
-} from '../investment-questionnaire/utils/errors';
 import { InvestmentQuestionnaireOption } from '../investment-questionnaire/investmentQuestionnaireOption.entity';
-import { ForbiddenError } from 'apollo-server-core';
+import { NotFoundError } from '../shared/errors';
 
 @Injectable()
 export class UserInvestmentQuestionnaireService {
@@ -27,13 +23,13 @@ export class UserInvestmentQuestionnaireService {
     userId: string
   ) {
     if (!userId) {
-      throw new ForbiddenError();
+      throw new NotFoundError('User not found');
     }
 
     if (args.questionnaireId) {
       await this.investmentQuestionnaireRepo.findOneOrFail(
         { id: args.questionnaireId },
-        { failHandler: (): any => new QuestionnaireNotFound() }
+        { failHandler: (): any => new NotFoundError('Questionnaire not found') }
       );
     }
 
@@ -52,13 +48,13 @@ export class UserInvestmentQuestionnaireService {
     userId: string
   ): Promise<UserInvestmentQuestionnaireAnswer> {
     if (!userId) {
-      throw new ForbiddenError();
+      throw new NotFoundError('User not found');
     }
 
     const { questionnaireId, answer, selectedOptionId } = args;
     const questionnaire = await this.investmentQuestionnaireRepo.findOneOrFail(
       { id: questionnaireId },
-      { failHandler: (): any => new QuestionnaireNotFound() }
+      { failHandler: (): any => new NotFoundError('Questionnaire not found') }
     );
 
     let userAnswer = await this.userInvestmentQuestionnaireRepo.findOne({
@@ -71,7 +67,10 @@ export class UserInvestmentQuestionnaireService {
       selectedOption =
         await this.investmentQuestionnaireOptionRepo.findOneOrFail(
           { id: selectedOptionId, questionnaire },
-          { failHandler: (): any => new QuestionnaireOptionNotFound() }
+          {
+            failHandler: (): any =>
+              new NotFoundError('Investment questionnaire not found'),
+          }
         );
     }
 

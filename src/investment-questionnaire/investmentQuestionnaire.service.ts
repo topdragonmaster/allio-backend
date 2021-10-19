@@ -3,7 +3,7 @@ import { InvestmentQuestionnaire } from './investmentQuestionnaire.entity';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, QueryOrder } from '@mikro-orm/core';
 import { GetAllQuestionnaireArgs } from './dto/getAllQuestionnaire.args';
-import { QuestionnaireNotFound } from './utils/errors';
+import { NotFoundError } from '../shared/errors';
 
 @Injectable()
 export class InvestmentQuestionnaireService {
@@ -29,7 +29,7 @@ export class InvestmentQuestionnaireService {
     });
 
     if (args.id && items.length === 0) {
-      throw new QuestionnaireNotFound();
+      throw new NotFoundError('Questionnaire not found');
     }
 
     return items;
