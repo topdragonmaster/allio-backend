@@ -172,6 +172,7 @@ export type Subjects =
   | typeof CognitoUserPool
   | CognitoUserPool
   | typeof UserInvestmentQuestionnaireAnswer
+  | UserInvestmentQuestionnaireAnswer
   | typeof UserRiskLevel
   | UserRiskLevel
   | 'all';

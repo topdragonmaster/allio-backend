@@ -15,6 +15,8 @@ import { join } from 'path';
 import { InvestmentQuestionnaireModule } from './investment-questionnaire/investmentQuestionnaire.module';
 import { UserInvestmentQuestionnaireModule } from './user-investment-questionnaire/userInvestmentQuestionnaire.module';
 import { RiskLevelModule } from './risk-level/riskLevel.module';
+import { AssetClassModule } from './asset-class/assetClass.module';
+import { UserAssetClassModule } from './user-asset-class/userAssetClass.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { RiskLevelModule } from './risk-level/riskLevel.module';
     InvestmentQuestionnaireModule,
     UserInvestmentQuestionnaireModule,
     RiskLevelModule,
+    AssetClassModule,
+    UserAssetClassModule,
   ],
   controllers: [AppController],
   providers: [AppService, CaslAbilityFactory],

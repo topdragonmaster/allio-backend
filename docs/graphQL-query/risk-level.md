@@ -68,7 +68,7 @@ Failed responses
 }
 ```
 
-- Forbidden
+- Forbidden - user does not have access to the resource
 
 ```json
 {
