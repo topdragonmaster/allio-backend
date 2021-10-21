@@ -99,3 +99,23 @@ Failed responses
   "data": null
 }
 ```
+
+- Unauthenticated
+
+```json
+{
+  "errors": [
+    {
+      "message": "Unauthorized",
+      "extensions": {
+        "code": "UNAUTHENTICATED",
+        "response": {
+          "statusCode": 401,
+          "message": "Unauthorized"
+        }
+      }
+    }
+  ],
+  "data": null
+}
+```

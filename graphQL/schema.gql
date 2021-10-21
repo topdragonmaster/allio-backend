@@ -49,6 +49,8 @@ type Mutation {
 
 type Query {
   getAllQuestionnaire(id: ID): [InvestmentQuestionnaire!]!
+  getAssetClassList(idList: [String!]): [AssetClass!]!
+  getUserAssetClassList(userId: String): [AssetClass!]!
   getUserInvestmentQuestionnaireAnswers(questionnaireId: String, userId: String): [UserInvestmentQuestionnaireAnswer!]!
   getUserRiskLevel(userId: String): UserRiskLevel!
 }

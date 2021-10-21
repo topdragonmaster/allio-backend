@@ -17,6 +17,7 @@ import {
 } from './types';
 import { UserInvestmentQuestionnaireAnswer } from '../user-investment-questionnaire/userInvestmentQuestionnaireAnswer.entity';
 import { UserRiskLevel } from '../risk-level/entities/userRiskLevel.entity';
+import { UserAssetClass } from '../user-asset-class/entities/userAssetClass.entity';
 
 const resolveAction = createAliasResolver({
   [Action.MODIFY]: [Action.UPDATE, Action.DELETE],
@@ -50,6 +51,7 @@ export class CaslAbilityFactory {
         can(Action.ACCESS, UserInvestmentQuestionnaireAnswer);
         can(Action.MODIFY, CognitoUserPool);
         can(Action.ACCESS, UserRiskLevel);
+        can(Action.ACCESS, UserAssetClass);
       }
     }
 

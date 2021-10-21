@@ -4,6 +4,7 @@ import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { ExecutionContext } from '@nestjs/common';
 import { UserInvestmentQuestionnaireAnswer } from '../user-investment-questionnaire/userInvestmentQuestionnaireAnswer.entity';
 import { UserRiskLevel } from '../risk-level/entities/userRiskLevel.entity';
+import { UserAssetClass } from '../user-asset-class/entities/userAssetClass.entity';
 
 export class RegisterRequestDTO {
   @ApiProperty({
@@ -175,6 +176,8 @@ export type Subjects =
   | UserInvestmentQuestionnaireAnswer
   | typeof UserRiskLevel
   | UserRiskLevel
+  | typeof UserAssetClass
+  | UserAssetClass
   | 'all';
 
 export type AppAbility = Ability<[Action, Subjects]>;
