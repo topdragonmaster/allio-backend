@@ -1,4 +1,4 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { AssetClass } from '../asset-class/entities/assetClass.entity';
 import { GetUserAssetClassListArgs } from './dto/getUserAssetClassList.args';
 import { CurrentUser } from '../auth/decorator/currentUser';
@@ -9,6 +9,8 @@ import { PoliciesGuard } from '../auth/policies.guard';
 import { UseGuards } from '@nestjs/common';
 import { CaslAbilityFactory } from '../auth/casl-ability.factory';
 import { UserAssetClassService } from './userAssetClass.service';
+import { SetUserInvestmentWorkflowArgs } from './dto/setUserInvestmentWorkflow.args';
+import { SetUserInvestmentWorkflowResponse } from './dto/setUserInvestmentWorkflow.response';
 
 @UseGuards(PoliciesGuard)
 @Resolver()
@@ -35,5 +37,26 @@ export class UserAssetClassResolver {
     }
 
     return this.userAssetClassService.getUserAssetClassList(userId);
+  }
+
+  @Mutation(() => SetUserInvestmentWorkflowResponse, {
+    name: 'setUserInvestmentWorkflow',
+  })
+  public async setUserInvestmentWorkflow(
+    @Args() args: SetUserInvestmentWorkflowArgs,
+    @CurrentUser() user: RequestUserInfo
+  ): Promise<SetUserInvestmentWorkflowResponse> {
+    const userId = args.userId || user.uuid;
+    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess(
+      user,
+      userId,
+      Action.MODIFY,
+      UserAssetClass
+    );
+    if (!hasAccess) {
+      throw new ForbiddenError('Forbidden');
+    }
+
+    return this.userAssetClassService.setUserInvestmentWorkflow(args, userId);
   }
 }
