@@ -13,8 +13,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      audience: authConfig.clientId,
       issuer: authConfig.authority,
+      // access token does not have a `aud` key but a client_id
+      // will validate manually on that
       algorithms: ['RS256'],
       ignoreExpiration: false,
       secretOrKeyProvider: passportJwtSecret({
@@ -27,6 +28,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   public async validate(payload: any) {
-    return this.authService.validateUserWithIdTokenPayload(payload);
+    const idTokenValidateRequest =
+      this.authService.validateUserWithIdTokenPayload(payload);
+    const accessTokenValidateRequest =
+      this.authService.validateUserWithAccessTokenPayload(payload);
+    // validate with an id token or access token (access token preferred)
+    return (await accessTokenValidateRequest) || (await idTokenValidateRequest);
   }
 }

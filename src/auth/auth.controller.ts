@@ -7,15 +7,12 @@ import {
   Logger,
   Post,
   Put,
-  Request,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CognitoUserPool } from 'amazon-cognito-identity-js';
-import { RequestObject } from '../shared/types';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { CaslAbilityFactory } from './casl-ability.factory';
+import { CurrentUser } from './decorator/currentUser';
 import { NoJwt } from './decorator/noJwt';
 import { AwsCognitoErrorCode } from './errorCode.enum';
 import { PoliciesGuard } from './policies.guard';
@@ -26,8 +23,11 @@ import {
   GeneralIdentityRequestDTO,
   ChangePasswordRequestDTO,
   ResetPasswordRequestDTO,
-  Action,
   RefreshRequestDTO,
+  RequestUserInfo,
+  RestoreUserDTO,
+  SetSmsMfaRequestDTO,
+  Action,
 } from './types';
 
 @UseGuards(PoliciesGuard)
@@ -35,10 +35,7 @@ import {
 @Controller('auth')
 export class AuthController {
   private readonly logger: Logger;
-  constructor(
-    private readonly authService: AuthService,
-    private readonly caslAbilityFactory: CaslAbilityFactory
-  ) {
+  constructor(private readonly authService: AuthService) {
     this.logger = new Logger(AuthController.name);
   }
 
@@ -71,6 +68,41 @@ export class AuthController {
     }
   }
 
+  @ApiBearerAuth()
+  @Post('get-user-info')
+  async getUserInfo(
+    @Body() { userId, ...userTokens }: RestoreUserDTO,
+    @CurrentUser() requestUser: RequestUserInfo
+  ) {
+    if (userId) {
+      const canAccessUserInfo =
+        await this.authService.checkCanAccessCognitoUser({
+          requestUser,
+          userId,
+        });
+      if (!canAccessUserInfo) {
+        throw new ForbiddenException();
+      }
+    }
+
+    try {
+      const user = this.authService.getSignedInUser({
+        userId: userId || requestUser.uuid,
+        ...userTokens,
+      });
+      return await this.authService.getUserAttributes(user);
+    } catch (err) {
+      this.logger.debug(this.logout.name, err);
+      if (err.code === AwsCognitoErrorCode.NotAuthorizedException) {
+        throw new UnauthorizedException(err.message);
+      }
+      throw new BadRequestException(err.message);
+    }
+  }
+
+  @ApiOperation({
+    summary: "confirm on user's identity whether it is email or phone",
+  })
   @NoJwt()
   @Post('confirm')
   async confirm(@Body() validateRequest: ConfirmRegistrationRequestDTO) {
@@ -82,6 +114,10 @@ export class AuthController {
     }
   }
 
+  @ApiOperation({
+    summary:
+      "resend confirm code to user's identity whether it is email or phone",
+  })
   @NoJwt()
   @Post('resend')
   async resend(
@@ -101,22 +137,24 @@ export class AuthController {
   @ApiBearerAuth()
   @Put('password')
   async changePassword(
-    @Body() { identity, oldPassword, newPassword }: ChangePasswordRequestDTO,
-    @Request() req: RequestObject
+    @Body() { userId, oldPassword, newPassword }: ChangePasswordRequestDTO,
+    @CurrentUser() requestUser: RequestUserInfo
   ) {
-    const ability = await this.caslAbilityFactory.createForRequestUser({
-      requestUser: req.user,
-      isMatchedUser: identity === req.user?.identity,
-    });
-    const canChangePassword = ability.can(Action.MODIFY, CognitoUserPool);
-
-    if (!canChangePassword) {
-      throw new ForbiddenException();
+    if (userId) {
+      const canChangePassword =
+        await this.authService.checkCanAccessCognitoUser({
+          requestUser,
+          userId,
+          action: Action.ACCESS,
+        });
+      if (!canChangePassword) {
+        throw new ForbiddenException();
+      }
     }
 
     try {
       const { user } = await this.authService.authenticateUser({
-        identity,
+        identity: userId,
         password: oldPassword,
       });
       return await this.authService.changePassword({
@@ -174,11 +212,67 @@ export class AuthController {
     }
   }
 
-  @NoJwt()
-  @Post('logout')
-  async logout(@Body() logoutRequest: AuthenticateRequestDTO) {
+  @ApiBearerAuth()
+  @Post('set-sms-mfa')
+  async setSmsMfa(
+    @Body()
+    { userId, phone_number: phoneNumber, ...userTokens }: SetSmsMfaRequestDTO,
+    @CurrentUser() requestUser: RequestUserInfo
+  ) {
+    if (userId) {
+      const canSetSmsMfa = await this.authService.checkCanAccessCognitoUser({
+        requestUser,
+        userId,
+        action: Action.MODIFY,
+      });
+      if (!canSetSmsMfa) {
+        throw new ForbiddenException();
+      }
+    }
+
     try {
-      const { user } = await this.authService.authenticateUser(logoutRequest);
+      const user = this.authService.getSignedInUser({
+        userId: userId || requestUser.uuid,
+        ...userTokens,
+      });
+
+      return await this.authService.setMfaPreference({
+        user,
+        settings: { sms: 'preferred' },
+        phoneNumber,
+      });
+    } catch (err) {
+      this.logger.debug(this.logout.name, err);
+      if (err.code === AwsCognitoErrorCode.NotAuthorizedException) {
+        throw new UnauthorizedException(err.message);
+      }
+      throw new BadRequestException(err.message);
+    }
+  }
+
+  @ApiBearerAuth()
+  @Post('logout')
+  async logout(
+    @Body() { userId, ...userTokens }: RestoreUserDTO,
+    @CurrentUser() requestUser: RequestUserInfo
+  ) {
+    if (userId) {
+      const canLogOut = await this.authService.checkCanAccessCognitoUser({
+        requestUser,
+        userId,
+        action: Action.ACCESS,
+      });
+
+      if (!canLogOut) {
+        throw new ForbiddenException();
+      }
+    }
+
+    try {
+      const user = this.authService.getSignedInUser({
+        userId: userId || requestUser.uuid,
+        ...userTokens,
+      });
       return await this.authService.signOutEverywhere(user);
     } catch (err) {
       this.logger.debug(this.logout.name, err);

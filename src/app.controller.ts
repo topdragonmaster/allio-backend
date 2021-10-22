@@ -3,8 +3,9 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { AppService } from './app.service';
 import { CheckPolicies } from './auth/decorator/checkPolicies';
+import { CurrentUser } from './auth/decorator/currentUser';
 import { PoliciesGuard } from './auth/policies.guard';
-import { Action } from './auth/types';
+import { Action, RequestUserInfo } from './auth/types';
 
 @Controller()
 export class AppController {
@@ -13,8 +14,8 @@ export class AppController {
   @ApiBearerAuth()
   @UseGuards(PoliciesGuard)
   @Get()
-  getHello(): string {
-    return this.appService.getString('Hello World!');
+  getHello(@CurrentUser() user: RequestUserInfo): RequestUserInfo {
+    return user;
   }
 
   @ApiBearerAuth()

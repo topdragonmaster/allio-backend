@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Ability } from '@casl/ability';
-import { CognitoUserPool } from 'amazon-cognito-identity-js';
+import { CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
 import { ExecutionContext } from '@nestjs/common';
 import { UserInvestmentQuestionnaireAnswer } from '../user-investment-questionnaire/userInvestmentQuestionnaireAnswer.entity';
 import { UserRiskLevel } from '../risk-level/entities/userRiskLevel.entity';
@@ -66,18 +66,29 @@ export class ConfirmRegistrationRequestDTO {
 export class GeneralIdentityRequestDTO {
   @ApiProperty({
     example: 'john.smith@example.com',
-    description: 'email or phone number for login',
+    description: 'email or phone number or user id',
   })
   identity: string;
 }
 
-export class ChangePasswordRequestDTO {
+export class GeneralUserIdRequestDTO {
   @ApiProperty({
-    example: 'john.smith@example.com',
-    description: 'email or phone number for login',
+    example: 'b8dd9d97-37da-44cb-9e9f-96da62f6d415',
+    description: 'AWS Cognito user id',
   })
-  identity: string;
+  userId: string;
+}
 
+export class OptionalUserIdRequestDTO {
+  @ApiProperty({
+    example: 'b8dd9d97-37da-44cb-9e9f-96da62f6d415',
+    description: 'AWS Cognito user id',
+    required: false,
+  })
+  userId?: string;
+}
+
+export class ChangePasswordRequestDTO extends GeneralUserIdRequestDTO {
   @ApiProperty({
     example: 'oldPassword',
     description: 'old password',
@@ -159,6 +170,36 @@ export class CodeDeliveryDetailsDTO {
   destination: string;
 }
 
+export class RestoreUserDTO extends OptionalUserIdRequestDTO {
+  @ApiProperty({
+    example: 'eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ',
+    description: 'AWS Cognito id token',
+  })
+  idToken: string;
+
+  @ApiProperty({
+    example: 'eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ',
+    description: 'AWS Cognito access token',
+  })
+  accessToken: string;
+
+  @ApiProperty({
+    example: 'eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ',
+    description: 'AWS Cognito refresh token',
+    required: false,
+  })
+  refreshToken?: string;
+}
+
+export class SetSmsMfaRequestDTO extends RestoreUserDTO {
+  @ApiProperty({
+    example: '+1415000000',
+    description: 'phone number with the plus sign, optional',
+    required: false,
+  })
+  phone_number?: string;
+}
+
 export enum Action {
   MANAGE = 'manage',
   CREATE = 'create',
@@ -201,4 +242,13 @@ export interface RequestUserInfo {
 
 export enum Roles {
   ADMIN = 'Admin',
+}
+
+export interface SetMfaPreferenceProps {
+  user: CognitoUser;
+  settings?: {
+    sms?: boolean | 'preferred';
+    totp?: boolean | 'preferred';
+  };
+  phoneNumber?: string;
 }
