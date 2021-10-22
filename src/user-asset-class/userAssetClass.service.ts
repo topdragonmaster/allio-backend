@@ -4,8 +4,8 @@ import { EntityRepository, QueryOrder } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { UserAssetClass } from './entities/userAssetClass.entity';
 import { NotFoundError } from '../shared/errors';
-import { SetUserInvestmentWorkflowResponse } from './dto/setUserInvestmentWorkflow.response';
-import { SetUserInvestmentWorkflowArgs } from './dto/setUserInvestmentWorkflow.args';
+import { SetUserAssetClassListResponse } from './dto/setUserAssetClassList.response';
+import { SetUserAssetClassListArgs } from './dto/setUserAssetClassList.args';
 
 @Injectable()
 export class UserAssetClassService {
@@ -37,10 +37,10 @@ export class UserAssetClassService {
     return userAssetClassList.map((userAsset) => userAsset.assetClass);
   }
 
-  public async setUserInvestmentWorkflow(
-    args: SetUserInvestmentWorkflowArgs,
+  public async setUserAssetClassList(
+    args: SetUserAssetClassListArgs,
     userId: string
-  ): Promise<SetUserInvestmentWorkflowResponse> {
+  ): Promise<SetUserAssetClassListResponse> {
     if (!userId) {
       throw new NotFoundError('User not found');
     }
@@ -66,6 +66,6 @@ export class UserAssetClassService {
     await this.userAssetClassRepo.nativeDelete({ userId });
     await this.userAssetClassRepo.persistAndFlush(userAssetClassList);
 
-    return new SetUserInvestmentWorkflowResponse(userId, assetClassList);
+    return new SetUserAssetClassListResponse(userId, assetClassList);
   }
 }

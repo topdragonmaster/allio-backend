@@ -2,7 +2,7 @@ import { ArgsType, Field } from '@nestjs/graphql';
 import { GraphQLString } from 'graphQL';
 
 @ArgsType()
-export class SetUserInvestmentWorkflowArgs {
+export class SetUserAssetClassListArgs {
   @Field({ nullable: true })
   userId: string;
 

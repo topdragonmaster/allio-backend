@@ -9,8 +9,8 @@ import { PoliciesGuard } from '../auth/policies.guard';
 import { UseGuards } from '@nestjs/common';
 import { CaslAbilityFactory } from '../auth/casl-ability.factory';
 import { UserAssetClassService } from './userAssetClass.service';
-import { SetUserInvestmentWorkflowArgs } from './dto/setUserInvestmentWorkflow.args';
-import { SetUserInvestmentWorkflowResponse } from './dto/setUserInvestmentWorkflow.response';
+import { SetUserAssetClassListArgs } from './dto/setUserAssetClassList.args';
+import { SetUserAssetClassListResponse } from './dto/setUserAssetClassList.response';
 
 @UseGuards(PoliciesGuard)
 @Resolver()
@@ -39,13 +39,13 @@ export class UserAssetClassResolver {
     return this.userAssetClassService.getUserAssetClassList(userId);
   }
 
-  @Mutation(() => SetUserInvestmentWorkflowResponse, {
-    name: 'setUserInvestmentWorkflow',
+  @Mutation(() => SetUserAssetClassListResponse, {
+    name: 'setUserAssetClassList',
   })
-  public async setUserInvestmentWorkflow(
-    @Args() args: SetUserInvestmentWorkflowArgs,
+  public async setUserAssetClassList(
+    @Args() args: SetUserAssetClassListArgs,
     @CurrentUser() user: RequestUserInfo
-  ): Promise<SetUserInvestmentWorkflowResponse> {
+  ): Promise<SetUserAssetClassListResponse> {
     const userId = args.userId || user.uuid;
     const hasAccess = await this.caslAbilityFactory.checkPolicyAccess(
       user,
@@ -57,6 +57,6 @@ export class UserAssetClassResolver {
       throw new ForbiddenError('Forbidden');
     }
 
-    return this.userAssetClassService.setUserInvestmentWorkflow(args, userId);
+    return this.userAssetClassService.setUserAssetClassList(args, userId);
   }
 }

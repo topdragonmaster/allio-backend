@@ -44,8 +44,8 @@ type InvestmentQuestionnaireOption {
 }
 
 type Mutation {
+  setUserAssetClassList(assetClassIdList: [String!]!, userId: String): SetUserAssetClassListResponse!
   setUserInvestmentQuestionnaireAnswer(answer: String, questionnaireId: String!, selectedOptionIdList: [String!], userId: String): [UserInvestmentQuestionnaireAnswer!]!
-  setUserInvestmentWorkflow(assetClassIdList: [String!]!, userId: String): SetUserInvestmentWorkflowResponse!
 }
 
 type Query {
@@ -65,7 +65,7 @@ type RiskLevel {
   updatedAt: DateTime!
 }
 
-type SetUserInvestmentWorkflowResponse {
+type SetUserAssetClassListResponse {
   assetClassList: [AssetClass!]
   userId: String
 }

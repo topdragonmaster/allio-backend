@@ -2,7 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { AssetClass } from '../../asset-class/entities/assetClass.entity';
 
 @ObjectType()
-export class SetUserInvestmentWorkflowResponse {
+export class SetUserAssetClassListResponse {
   @Field({ nullable: true })
   userId: string;
 
