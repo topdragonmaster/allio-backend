@@ -38,13 +38,13 @@ export class UserInvestmentQuestionnaireResolver {
     return this.userInvestmentQuestionnaireService.getAnswers(args, userId);
   }
 
-  @Mutation(() => UserInvestmentQuestionnaireAnswer, {
+  @Mutation(() => [UserInvestmentQuestionnaireAnswer], {
     name: 'setUserInvestmentQuestionnaireAnswer',
   })
   public async setUserInvestmentQuestionnaireAnswer(
     @Args() args: SetUserQuestionnaireAnswerArgs,
     @CurrentUser() user: RequestUserInfo
-  ): Promise<UserInvestmentQuestionnaireAnswer> {
+  ): Promise<UserInvestmentQuestionnaireAnswer[]> {
     const userId = args.userId || user.uuid;
     const hasAccess = await this.caslAbilityFactory.checkPolicyAccess(
       user,

@@ -21,6 +21,6 @@ export class InvestmentQuestionnaireOption extends Base<
   option!: string;
 
   @Field()
-  @Property({ unique: true })
+  @Property()
   description!: string;
 }

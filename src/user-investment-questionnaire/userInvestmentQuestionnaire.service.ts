@@ -12,7 +12,7 @@ import { NotFoundError } from '../shared/errors';
 export class UserInvestmentQuestionnaireService {
   public constructor(
     @InjectRepository(UserInvestmentQuestionnaireAnswer)
-    private readonly userInvestmentQuestionnaireRepo: EntityRepository<UserInvestmentQuestionnaireAnswer>,
+    private readonly userQuestionnaireAnswerRepo: EntityRepository<UserInvestmentQuestionnaireAnswer>,
     @InjectRepository(InvestmentQuestionnaire)
     private readonly investmentQuestionnaireRepo: EntityRepository<InvestmentQuestionnaire>,
     @InjectRepository(InvestmentQuestionnaireOption)
@@ -33,7 +33,7 @@ export class UserInvestmentQuestionnaireService {
       );
     }
 
-    return this.userInvestmentQuestionnaireRepo.find(
+    return this.userQuestionnaireAnswerRepo.find(
       { ...args, userId },
       {
         orderBy: {
@@ -46,50 +46,66 @@ export class UserInvestmentQuestionnaireService {
   public async setAnswer(
     args: SetUserQuestionnaireAnswerArgs,
     userId: string
-  ): Promise<UserInvestmentQuestionnaireAnswer> {
+  ): Promise<UserInvestmentQuestionnaireAnswer[]> {
     if (!userId) {
       throw new NotFoundError('User not found');
     }
 
-    const { questionnaireId, answer, selectedOptionId } = args;
-    const questionnaire = await this.investmentQuestionnaireRepo.findOneOrFail(
-      { id: questionnaireId },
-      { failHandler: (): any => new NotFoundError('Questionnaire not found') }
-    );
+    const { questionnaireId, answer, selectedOptionIdList = [] } = args;
+    const questionnaire: InvestmentQuestionnaire =
+      await this.investmentQuestionnaireRepo.findOneOrFail(
+        { id: questionnaireId },
+        { failHandler: (): any => new NotFoundError('Questionnaire not found') }
+      );
 
-    let userAnswer = await this.userInvestmentQuestionnaireRepo.findOne({
-      userId,
-      questionnaire,
-    });
+    const oldUserAnswerList: UserInvestmentQuestionnaireAnswer[] =
+      await this.userQuestionnaireAnswerRepo.find({
+        userId,
+        questionnaire,
+      });
 
-    let selectedOption: InvestmentQuestionnaireOption;
-    if (selectedOptionId) {
-      selectedOption =
-        await this.investmentQuestionnaireOptionRepo.findOneOrFail(
-          { id: selectedOptionId, questionnaire },
-          {
-            failHandler: (): any =>
-              new NotFoundError('Investment questionnaire not found'),
-          }
-        );
+    if (answer || selectedOptionIdList.length === 0) {
+      const userQuestionnaireAnswer: UserInvestmentQuestionnaireAnswer =
+        this.userQuestionnaireAnswerRepo.create({
+          answer,
+          userId,
+          questionnaire,
+          selectedOption: null,
+        });
+      await this.userQuestionnaireAnswerRepo.remove(oldUserAnswerList);
+      await this.userQuestionnaireAnswerRepo.persistAndFlush(
+        userQuestionnaireAnswer
+      );
+
+      return [userQuestionnaireAnswer];
     }
 
-    if (!userAnswer) {
-      userAnswer = this.userInvestmentQuestionnaireRepo.create({
+    const questionnaireOptionList: InvestmentQuestionnaireOption[] =
+      await this.investmentQuestionnaireOptionRepo.find({
+        id: { $in: selectedOptionIdList },
+        questionnaire,
+      });
+
+    if (questionnaireOptionList.length !== selectedOptionIdList.length) {
+      const missingOptionId = selectedOptionIdList.find(
+        (id) => !questionnaireOptionList.some((asset) => asset.id === id)
+      );
+      throw new NotFoundError('Investment questionnaire option not found', {
+        investmentQuestionnaireOptionId: missingOptionId,
+      });
+    }
+
+    await this.userQuestionnaireAnswerRepo.remove(oldUserAnswerList);
+    const userAnswerList = questionnaireOptionList.map((selectedOption) =>
+      this.userQuestionnaireAnswerRepo.create({
         answer,
         userId,
         questionnaire,
         selectedOption,
-      });
-    } else {
-      this.userInvestmentQuestionnaireRepo.assign(userAnswer, {
-        answer: args.answer || userAnswer.answer,
-        selectedOption: selectedOption || userAnswer.selectedOption,
-      });
-    }
+      })
+    );
 
-    await this.userInvestmentQuestionnaireRepo.persistAndFlush(userAnswer);
-
-    return userAnswer;
+    await this.userQuestionnaireAnswerRepo.persistAndFlush(userAnswerList);
+    return userAnswerList;
   }
 }

@@ -44,7 +44,7 @@ type InvestmentQuestionnaireOption {
 }
 
 type Mutation {
-  setUserInvestmentQuestionnaireAnswer(answer: String, questionnaireId: String!, selectedOptionId: String, userId: String): UserInvestmentQuestionnaireAnswer!
+  setUserInvestmentQuestionnaireAnswer(answer: String, questionnaireId: String!, selectedOptionIdList: [String!], userId: String): [UserInvestmentQuestionnaireAnswer!]!
   setUserInvestmentWorkflow(assetClassIdList: [String!]!, userId: String): SetUserInvestmentWorkflowResponse!
 }
 
