@@ -17,6 +17,8 @@ import { UserInvestmentQuestionnaireModule } from './user-investment-questionnai
 import { RiskLevelModule } from './risk-level/riskLevel.module';
 import { AssetClassModule } from './asset-class/assetClass.module';
 import { UserAssetClassModule } from './user-asset-class/userAssetClass.module';
+import { ManagementWorkflowModule } from './management-workflow/managementWorkflow.module';
+import { UserManagementWorkflowModule } from './user-management-workflow/userManagementWorkflow.module';
 
 @Module({
   imports: [
@@ -40,6 +42,8 @@ import { UserAssetClassModule } from './user-asset-class/userAssetClass.module';
     RiskLevelModule,
     AssetClassModule,
     UserAssetClassModule,
+    ManagementWorkflowModule,
+    UserManagementWorkflowModule,
   ],
   controllers: [AppController],
   providers: [AppService, CaslAbilityFactory],

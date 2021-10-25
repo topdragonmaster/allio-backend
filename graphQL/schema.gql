@@ -43,6 +43,23 @@ type InvestmentQuestionnaireOption {
   updatedAt: DateTime!
 }
 
+type ManagementWorkflow {
+  active: Boolean!
+  createdAt: DateTime!
+  description: String!
+  id: ID!
+  key: ManagementWorkflowKey!
+  name: String!
+  updatedAt: DateTime!
+}
+
+"""supported management workflow key"""
+enum ManagementWorkflowKey {
+  Full
+  Partial
+  Self
+}
+
 type Mutation {
   setUserAssetClassList(assetClassIdList: [String!]!, userId: String): SetUserAssetClassListResponse!
   setUserInvestmentQuestionnaireAnswer(answer: String, questionnaireId: String!, selectedOptionIdList: [String!], userId: String): [UserInvestmentQuestionnaireAnswer!]!
