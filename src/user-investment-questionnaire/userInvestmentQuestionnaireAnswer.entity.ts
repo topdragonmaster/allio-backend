@@ -3,7 +3,6 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { InvestmentQuestionnaire } from '../investment-questionnaire/investmentQuestionnaire.entity';
 import { InvestmentQuestionnaireOption } from '../investment-questionnaire/investmentQuestionnaireOption.entity';
 import { Base } from '../shared/base.entity';
-import { GraphQLString } from 'graphql';
 
 @ObjectType()
 @Entity()
@@ -22,7 +21,7 @@ export class UserInvestmentQuestionnaireAnswer extends Base<
   @ManyToOne(() => InvestmentQuestionnaire)
   questionnaire!: InvestmentQuestionnaire;
 
-  @Field(() => GraphQLString)
+  @Field(() => String)
   @Property({ persist: false })
   get questionnaireId(): string {
     return this.questionnaire?.id;
@@ -35,7 +34,7 @@ export class UserInvestmentQuestionnaireAnswer extends Base<
   @ManyToOne(() => InvestmentQuestionnaireOption, { nullable: true })
   selectedOption?: InvestmentQuestionnaireOption;
 
-  @Field(() => GraphQLString, { nullable: true })
+  @Field(() => String, { nullable: true })
   @Property({ persist: false, nullable: true })
   get selectedOptionId(): string {
     return this.selectedOption?.id;

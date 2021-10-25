@@ -1,7 +1,7 @@
 import { ArgsType, Field } from '@nestjs/graphql';
 
 @ArgsType()
-export class GetAssetClassListArgs {
+export class GetManagementWorkflowArgs {
   @Field(() => [String], { nullable: true })
   idList: string[];
 }
