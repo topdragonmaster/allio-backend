@@ -5,6 +5,7 @@ import { ExecutionContext } from '@nestjs/common';
 import { UserInvestmentQuestionnaireAnswer } from '../user-investment-questionnaire/userInvestmentQuestionnaireAnswer.entity';
 import { UserRiskLevel } from '../risk-level/entities/userRiskLevel.entity';
 import { UserAssetClass } from '../user-asset-class/entities/userAssetClass.entity';
+import { UserManagementWorkflow } from '../user-management-workflow/entities/userManagementWorkflow.entity';
 
 export class RegisterRequestDTO {
   @ApiProperty({
@@ -219,6 +220,8 @@ export type Subjects =
   | UserRiskLevel
   | typeof UserAssetClass
   | UserAssetClass
+  | UserManagementWorkflow
+  | typeof UserManagementWorkflow
   | 'all';
 
 export type AppAbility = Ability<[Action, Subjects]>;

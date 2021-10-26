@@ -63,6 +63,7 @@ enum ManagementWorkflowKey {
 type Mutation {
   setUserAssetClassList(assetClassIdList: [String!]!, userId: String): SetUserAssetClassListResponse!
   setUserInvestmentQuestionnaireAnswer(answer: String, questionnaireId: String!, selectedOptionIdList: [String!], userId: String): [UserInvestmentQuestionnaireAnswer!]!
+  setUserManagementWorkflow(managementWorkflowId: String!, userId: String): UserManagementWorkflow!
 }
 
 type Query {
@@ -71,6 +72,7 @@ type Query {
   getManagementWorkflowList(idList: [String!]): [ManagementWorkflow!]!
   getUserAssetClassList(userId: String): [AssetClass!]!
   getUserInvestmentQuestionnaireAnswers(questionnaireId: String, userId: String): [UserInvestmentQuestionnaireAnswer!]!
+  getUserManagementWorkflow(userId: String): ManagementWorkflow
   getUserRiskLevel(userId: String): UserRiskLevel!
 }
 
@@ -95,6 +97,15 @@ type UserInvestmentQuestionnaireAnswer {
   id: ID!
   questionnaireId: String!
   selectedOptionId: String
+  updatedAt: DateTime!
+  userId: String!
+}
+
+type UserManagementWorkflow {
+  active: Boolean!
+  createdAt: DateTime!
+  id: ID!
+  managementWorkflow: ManagementWorkflow!
   updatedAt: DateTime!
   userId: String!
 }
