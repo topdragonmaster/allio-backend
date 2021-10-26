@@ -7,6 +7,7 @@ import { SetUserQuestionnaireAnswerArgs } from './dto/setUserQuestionnaireAnswer
 import { InvestmentQuestionnaire } from '../investment-questionnaire/investmentQuestionnaire.entity';
 import { InvestmentQuestionnaireOption } from '../investment-questionnaire/investmentQuestionnaireOption.entity';
 import { NotFoundError } from '../shared/errors';
+import { FilterQuery } from '@mikro-orm/core/typings';
 
 @Injectable()
 export class UserInvestmentQuestionnaireService {
@@ -26,21 +27,23 @@ export class UserInvestmentQuestionnaireService {
       throw new NotFoundError('User not found');
     }
 
+    const filterQuery: FilterQuery<UserInvestmentQuestionnaireAnswer> = {
+      userId,
+    };
+
     if (args.questionnaireId) {
       await this.investmentQuestionnaireRepo.findOneOrFail(
         { id: args.questionnaireId },
         { failHandler: (): any => new NotFoundError('Questionnaire not found') }
       );
+      filterQuery.questionnaire = args.questionnaireId;
     }
 
-    return this.userQuestionnaireAnswerRepo.find(
-      { ...args, userId },
-      {
-        orderBy: {
-          createdAt: QueryOrder.ASC,
-        },
-      }
-    );
+    return this.userQuestionnaireAnswerRepo.find(filterQuery, {
+      orderBy: {
+        createdAt: QueryOrder.ASC,
+      },
+    });
   }
 
   public async setAnswer(

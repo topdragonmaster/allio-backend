@@ -42,6 +42,8 @@
     "amazon-cognito-identity-js": "^5.1.0",
     "apollo-server-core": "^3.3.0",
     "apollo-server-fastify": "^3.3.0",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
     "fastify": "^3.20.2",
     "fastify-swagger": "^4.9.0",
     "graphql": "^15.6.0",

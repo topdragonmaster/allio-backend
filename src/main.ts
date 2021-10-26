@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { AsyncLocalStorage } from 'async_hooks';
 import { NestFactory } from '@nestjs/core';
 import {
@@ -9,6 +10,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { IS_PROD } from './shared/constants';
+import { ValidationPipe } from '@nestjs/common';
 
 global['fetch'] = require('node-fetch');
 
@@ -23,6 +25,8 @@ async function bootstrap() {
       logger: IS_PROD ? ['warn', 'error'] : ['debug'],
     }
   );
+
+  app.useGlobalPipes(new ValidationPipe());
 
   const documentConfig = new DocumentBuilder()
     .setTitle('Main Backend')
