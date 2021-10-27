@@ -19,6 +19,7 @@ import { AssetClassModule } from './asset-class/assetClass.module';
 import { UserAssetClassModule } from './user-asset-class/userAssetClass.module';
 import { ManagementWorkflowModule } from './management-workflow/managementWorkflow.module';
 import { UserManagementWorkflowModule } from './user-management-workflow/userManagementWorkflow.module';
+import { InvestmentValueModule } from './investment-value/investmentValue.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { UserManagementWorkflowModule } from './user-management-workflow/userMan
     UserAssetClassModule,
     ManagementWorkflowModule,
     UserManagementWorkflowModule,
+    InvestmentValueModule,
   ],
   controllers: [AppController],
   providers: [AppService, CaslAbilityFactory],

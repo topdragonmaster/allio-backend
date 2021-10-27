@@ -43,6 +43,15 @@ type InvestmentQuestionnaireOption {
   updatedAt: DateTime!
 }
 
+type InvestmentValue {
+  active: Boolean!
+  createdAt: DateTime!
+  description: String!
+  id: ID!
+  investmentValue: String!
+  updatedAt: DateTime!
+}
+
 type ManagementWorkflow {
   active: Boolean!
   createdAt: DateTime!
