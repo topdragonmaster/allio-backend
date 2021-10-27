@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -19,6 +20,7 @@ import { AssetClassModule } from './asset-class/assetClass.module';
 import { UserAssetClassModule } from './user-asset-class/userAssetClass.module';
 import { ManagementWorkflowModule } from './management-workflow/managementWorkflow.module';
 import { UserManagementWorkflowModule } from './user-management-workflow/userManagementWorkflow.module';
+import { StaticAssetModule } from './static-asset/static-asset.module';
 import { InvestmentValueModule } from './investment-value/investmentValue.module';
 import { Portfolio } from './portfolio/portfolio.module';
 
@@ -46,6 +48,7 @@ import { Portfolio } from './portfolio/portfolio.module';
     UserAssetClassModule,
     ManagementWorkflowModule,
     UserManagementWorkflowModule,
+    StaticAssetModule,
     InvestmentValueModule,
     Portfolio,
   ],

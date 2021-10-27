@@ -1,0 +1,42 @@
+import { Base } from '../../shared/base.entity';
+import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
+import { Roles } from '../../auth/types';
+
+@Entity()
+export class StaticAssetAllocation extends Base<StaticAssetAllocation, 'id'> {
+  @PrimaryKey({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
+  id: string;
+
+  @Property({ unique: true })
+  name: string;
+
+  @Property({ default: '' })
+  description: string;
+
+  @Enum(() => AssetTableName)
+  assetTable: AssetTableName;
+
+  @Property({ type: 'uuid' })
+  assetTableId: string;
+
+  @Enum(() => StaticAssetCategory)
+  category: StaticAssetCategory;
+
+  @Property()
+  order: number;
+
+  @Enum({ items: () => Roles, array: true, default: [] })
+  role: Roles[];
+
+  @Property({ default: [] })
+  tag: string[];
+}
+
+export enum AssetTableName {
+  S3StaticAsset = 's3_static_asset',
+  TextStaticAsset = 'text_static_asset',
+}
+
+export enum StaticAssetCategory {
+  Splash = 'Splash',
+}
