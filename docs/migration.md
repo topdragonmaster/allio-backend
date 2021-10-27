@@ -5,7 +5,7 @@
 - Migration script should be created when there are changes to the entity files (`src/**/*.entity.ts`)
 - Automatically create migration script by running
   ```sh
-  pnpm run migration:create
+  pnpm migration:create
   ```
 - Verify that new migration js file (`dist/migrations/Migration*.js`) is created
 
@@ -14,11 +14,11 @@
 - Migration script should be run manually to update the table schema of the database.
 - Make sure the migration js files in `dist/migrations/` have 1 to 1 relationship to the ts files in `migrations/`; if not, run the compiler again
   ```sh
-  npx swc migrations -d ./dist/migrations
+  pnpm migration:compile
   ```
 - To up the version of migration script, run
   ```sh
-  npx mikro-orm migration:up
+  pnpm migration:up
   ```
 
 ## Down Migration Version

@@ -20,7 +20,7 @@ $ nvm use || nvm install
 
 ```sh
 # production mode
-$ pnpm run start:prod
+$ pnpm start:prod
 ```
 
 ## Api Document
