@@ -6,6 +6,8 @@ import { UserInvestmentQuestionnaireAnswer } from '../user-investment-questionna
 import { UserRiskLevel } from '../risk-level/entities/userRiskLevel.entity';
 import { UserAssetClass } from '../user-asset-class/entities/userAssetClass.entity';
 import { UserManagementWorkflow } from '../user-management-workflow/entities/userManagementWorkflow.entity';
+import { UserInvestmentValue } from '../investment-value/entities/userInvestmentValue.entity';
+import { InvestmentValue } from '../investment-value/entities/investmentValue.entity';
 
 export class RegisterRequestDTO {
   @ApiProperty({
@@ -220,8 +222,10 @@ export type Subjects =
   | UserRiskLevel
   | typeof UserAssetClass
   | UserAssetClass
-  | UserManagementWorkflow
   | typeof UserManagementWorkflow
+  | UserManagementWorkflow
+  | typeof UserInvestmentValue
+  | InvestmentValue
   | 'all';
 
 export type AppAbility = Ability<[Action, Subjects]>;

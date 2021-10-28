@@ -81,6 +81,7 @@ type Query {
   getManagementWorkflowList(idList: [String!]): [ManagementWorkflow!]!
   getUserAssetClassList(userId: String): [AssetClass!]!
   getUserInvestmentQuestionnaireAnswers(questionnaireId: String, userId: String): [UserInvestmentQuestionnaireAnswer!]!
+  getUserInvestmentValue(userId: String): UserInvestmentValue!
   getUserManagementWorkflow(userId: String): ManagementWorkflow
   getUserRiskLevel(userId: String): UserRiskLevel!
 }
@@ -106,6 +107,15 @@ type UserInvestmentQuestionnaireAnswer {
   id: ID!
   questionnaireId: String!
   selectedOptionId: String
+  updatedAt: DateTime!
+  userId: String!
+}
+
+type UserInvestmentValue {
+  active: Boolean!
+  createdAt: DateTime!
+  id: ID!
+  investmentValue: InvestmentValue!
   updatedAt: DateTime!
   userId: String!
 }

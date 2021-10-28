@@ -23,15 +23,15 @@ export class UserAssetClassResolver {
   @Query(() => [AssetClass], { name: 'getUserAssetClassList' })
   public async getUserAssetClassList(
     @Args() args: GetUserAssetClassListArgs,
-    @CurrentUser() user: RequestUserInfo
+    @CurrentUser() requestUser: RequestUserInfo
   ): Promise<AssetClass[]> {
-    const userId = args.userId || user.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess(
-      user,
+    const userId = args.userId || requestUser.uuid;
+    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+      requestUser,
       userId,
-      Action.READ,
-      UserAssetClass
-    );
+      action: Action.READ,
+      subject: UserAssetClass,
+    });
     if (!hasAccess) {
       throw new ForbiddenError('Forbidden');
     }
@@ -44,15 +44,15 @@ export class UserAssetClassResolver {
   })
   public async setUserAssetClassList(
     @Args() args: SetUserAssetClassListArgs,
-    @CurrentUser() user: RequestUserInfo
+    @CurrentUser() requestUser: RequestUserInfo
   ): Promise<SetUserAssetClassListResponse> {
-    const userId = args.userId || user.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess(
-      user,
+    const userId = args.userId || requestUser.uuid;
+    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+      requestUser,
       userId,
-      Action.MODIFY,
-      UserAssetClass
-    );
+      action: Action.MODIFY,
+      subject: UserAssetClass,
+    });
     if (!hasAccess) {
       throw new ForbiddenError('Forbidden');
     }

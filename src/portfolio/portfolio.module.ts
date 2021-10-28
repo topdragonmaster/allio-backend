@@ -5,4 +5,4 @@ import { UserRecommendedPortfolio } from './entities/userRecommendedPortfolio.en
 @Module({
   imports: [MikroOrmModule.forFeature([UserRecommendedPortfolio])],
 })
-export class Portfolio {}
+export class PortfolioModule {}

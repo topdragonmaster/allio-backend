@@ -25,15 +25,15 @@ export class UserManagementWorkflowResolver {
   })
   public async getUserManagementWorkflow(
     @Args() args: GetUserManagementWorkflowArgs,
-    @CurrentUser() user: RequestUserInfo
+    @CurrentUser() requestUser: RequestUserInfo
   ): Promise<ManagementWorkflow | null> {
-    const userId = args.userId || user.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess(
-      user,
+    const userId = args.userId || requestUser.uuid;
+    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+      requestUser,
       userId,
-      Action.READ,
-      UserManagementWorkflow
-    );
+      action: Action.READ,
+      subject: UserManagementWorkflow,
+    });
     if (!hasAccess) {
       throw new ForbiddenError('Forbidden');
     }
@@ -46,15 +46,15 @@ export class UserManagementWorkflowResolver {
   })
   public async setUserManagementWorkflow(
     @Args() args: SetUserManagementWorkflowArgs,
-    @CurrentUser() user: RequestUserInfo
+    @CurrentUser() requestUser: RequestUserInfo
   ): Promise<UserManagementWorkflow> {
-    const userId = args.userId || user.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess(
-      user,
+    const userId = args.userId || requestUser.uuid;
+    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+      requestUser,
       userId,
-      Action.MODIFY,
-      UserManagementWorkflow
-    );
+      action: Action.MODIFY,
+      subject: UserManagementWorkflow,
+    });
     if (!hasAccess) {
       throw new ForbiddenError('Forbidden');
     }

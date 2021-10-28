@@ -1,5 +1,5 @@
 import { FastifyRequest } from 'fastify';
-import { RequestUserInfo } from 'src/auth/types';
+import { RequestUserInfo } from '../auth/types';
 
 export interface RequestGenericInterface {
   params?: unknown;

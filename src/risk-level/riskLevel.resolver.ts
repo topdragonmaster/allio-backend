@@ -20,15 +20,15 @@ export class RiskLevelResolver {
   @Query(() => UserRiskLevel, { name: 'getUserRiskLevel' })
   async getUserRiskLevel(
     @Args() args: GetUserRiskLevelArgs,
-    @CurrentUser() user: RequestUserInfo
+    @CurrentUser() requestUser: RequestUserInfo
   ) {
-    const userId = args.userId || user.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess(
-      user,
+    const userId = args.userId || requestUser.uuid;
+    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+      requestUser,
       userId,
-      Action.READ,
-      UserRiskLevel
-    );
+      action: Action.READ,
+      subject: UserRiskLevel,
+    });
     if (!hasAccess) {
       throw new ForbiddenError('Forbidden');
     }

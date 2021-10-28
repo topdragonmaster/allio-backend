@@ -19,6 +19,7 @@ import { UserInvestmentQuestionnaireAnswer } from '../user-investment-questionna
 import { UserRiskLevel } from '../risk-level/entities/userRiskLevel.entity';
 import { UserAssetClass } from '../user-asset-class/entities/userAssetClass.entity';
 import { UserManagementWorkflow } from '../user-management-workflow/entities/userManagementWorkflow.entity';
+import { UserInvestmentValue } from '../investment-value/entities/userInvestmentValue.entity';
 
 const resolveAction = createAliasResolver({
   [Action.MODIFY]: [Action.UPDATE, Action.DELETE],
@@ -54,6 +55,7 @@ export class CaslAbilityFactory {
         can(Action.ACCESS, UserRiskLevel);
         can(Action.ACCESS, UserAssetClass);
         can(Action.ACCESS, UserManagementWorkflow);
+        can(Action.ACCESS, UserInvestmentValue);
       }
     }
 
@@ -84,12 +86,17 @@ export class CaslAbilityFactory {
       this.execPolicyHandler({ handler, ability, context });
   }
 
-  public async checkPolicyAccess(
-    requestUser: RequestUserInfo,
-    userId: string,
-    action: Action,
-    subject: Subjects
-  ): Promise<boolean> {
+  public async checkPolicyAccess({
+    requestUser,
+    userId,
+    action,
+    subject,
+  }: {
+    requestUser: RequestUserInfo;
+    userId: string;
+    action: Action;
+    subject: Subjects;
+  }): Promise<boolean> {
     const ability = await this.createForRequestUser({
       requestUser,
       isMatchedUser: userId === requestUser.uuid,

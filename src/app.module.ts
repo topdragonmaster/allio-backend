@@ -22,7 +22,7 @@ import { ManagementWorkflowModule } from './management-workflow/managementWorkfl
 import { UserManagementWorkflowModule } from './user-management-workflow/userManagementWorkflow.module';
 import { StaticAssetModule } from './static-asset/static-asset.module';
 import { InvestmentValueModule } from './investment-value/investmentValue.module';
-import { Portfolio } from './portfolio/portfolio.module';
+import { PortfolioModule } from './portfolio/portfolio.module';
 
 @Module({
   imports: [
@@ -50,7 +50,7 @@ import { Portfolio } from './portfolio/portfolio.module';
     UserManagementWorkflowModule,
     StaticAssetModule,
     InvestmentValueModule,
-    Portfolio,
+    PortfolioModule,
   ],
   controllers: [AppController],
   providers: [AppService, CaslAbilityFactory],

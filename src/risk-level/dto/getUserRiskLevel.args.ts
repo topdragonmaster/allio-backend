@@ -1,10 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { IsOptional, IsUUID } from 'class-validator';
+import { ArgsType } from '@nestjs/graphql';
+import { GetUserPropertiesArgs } from '../../shared/dto/getUserProperties.args';
 
 @ArgsType()
-export class GetUserRiskLevelArgs {
-  @IsOptional()
-  @IsUUID()
-  @Field({ nullable: true })
-  userId: string = undefined;
-}
+export class GetUserRiskLevelArgs extends GetUserPropertiesArgs {}

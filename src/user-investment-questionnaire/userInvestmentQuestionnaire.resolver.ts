@@ -23,15 +23,15 @@ export class UserInvestmentQuestionnaireResolver {
   })
   public async getUserInvestmentQuestionnaireAnswers(
     @Args() args: GetUserQuestionnaireAnswerArgs,
-    @CurrentUser() user: RequestUserInfo
+    @CurrentUser() requestUser: RequestUserInfo
   ): Promise<UserInvestmentQuestionnaireAnswer[]> {
-    const userId = args.userId || user.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess(
-      user,
+    const userId = args.userId || requestUser.uuid;
+    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+      requestUser,
       userId,
-      Action.READ,
-      UserInvestmentQuestionnaireAnswer
-    );
+      action: Action.READ,
+      subject: UserInvestmentQuestionnaireAnswer,
+    });
     if (!hasAccess) {
       throw new ForbiddenError('Forbidden');
     }
@@ -43,15 +43,15 @@ export class UserInvestmentQuestionnaireResolver {
   })
   public async setUserInvestmentQuestionnaireAnswer(
     @Args() args: SetUserQuestionnaireAnswerArgs,
-    @CurrentUser() user: RequestUserInfo
+    @CurrentUser() requestUser: RequestUserInfo
   ): Promise<UserInvestmentQuestionnaireAnswer[]> {
-    const userId = args.userId || user.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess(
-      user,
+    const userId = args.userId || requestUser.uuid;
+    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+      requestUser,
       userId,
-      Action.MODIFY,
-      UserInvestmentQuestionnaireAnswer
-    );
+      action: Action.MODIFY,
+      subject: UserInvestmentQuestionnaireAnswer,
+    });
     if (!hasAccess) {
       throw new ForbiddenError('Forbidden');
     }
