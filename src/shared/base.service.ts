@@ -15,10 +15,8 @@ import {
 
 @Injectable()
 export abstract class BaseService<T> {
-  private readonly logger: Logger;
-  constructor(private readonly genericRepository: EntityRepository<T>) {
-    this.logger = new Logger(BaseService.name);
-  }
+  protected logger: Logger;
+  constructor(private readonly genericRepository: EntityRepository<T>) {}
 
   private catchError(err: Error): void {
     this.logger.error(err);

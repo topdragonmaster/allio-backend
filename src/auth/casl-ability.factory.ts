@@ -5,7 +5,11 @@ import {
   createAliasResolver,
   ExtractSubjectType,
 } from '@casl/ability';
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import {
   Action,
@@ -26,6 +30,12 @@ const resolveAction = createAliasResolver({
   [Action.ACCESS]: [Action.READ, Action.MODIFY],
 }) as (action: Action | Action[]) => Action | Action[];
 
+export interface CheckPolicyAccessProps {
+  requestUser: RequestUserInfo;
+  userId: string;
+  action: Action;
+  subject: Subjects;
+}
 @Injectable()
 export class CaslAbilityFactory {
   async createForRequestUser({
@@ -81,7 +91,7 @@ export class CaslAbilityFactory {
     return handler.handle(ability, context);
   }
 
-  execPolicyHanlerFactory(ability: AppAbility, context: ExecutionContext) {
+  execPolicyHandlerFactory(ability: AppAbility, context: ExecutionContext) {
     return (handler: PolicyHandler) =>
       this.execPolicyHandler({ handler, ability, context });
   }
@@ -91,17 +101,24 @@ export class CaslAbilityFactory {
     userId,
     action,
     subject,
-  }: {
-    requestUser: RequestUserInfo;
-    userId: string;
-    action: Action;
-    subject: Subjects;
-  }): Promise<boolean> {
+  }: CheckPolicyAccessProps): Promise<boolean> {
     const ability = await this.createForRequestUser({
       requestUser,
       isMatchedUser: userId === requestUser.uuid,
     });
 
     return ability.can(action, subject);
+  }
+
+  public async canAccessOrFail({
+    ForbiddenError = ForbiddenException,
+    ...args
+  }: CheckPolicyAccessProps & {
+    ForbiddenError?: typeof ForbiddenException;
+  }): Promise<void> {
+    const hasAccess = await this.checkPolicyAccess(args);
+    if (!hasAccess) {
+      throw new ForbiddenError('Forbidden');
+    }
   }
 }

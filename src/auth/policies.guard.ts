@@ -37,7 +37,7 @@ export class PoliciesGuard extends JwtAuthGuard implements CanActivate {
       });
 
       const result = policyHandlers.every(
-        this.caslAbilityFactory.execPolicyHanlerFactory(ability, context)
+        this.caslAbilityFactory.execPolicyHandlerFactory(ability, context)
       );
 
       if (!result) {

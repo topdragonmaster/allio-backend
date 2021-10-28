@@ -26,15 +26,13 @@ export class UserAssetClassResolver {
     @CurrentUser() requestUser: RequestUserInfo
   ): Promise<AssetClass[]> {
     const userId = args.userId || requestUser.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+    await this.caslAbilityFactory.canAccessOrFail({
       requestUser,
       userId,
       action: Action.READ,
       subject: UserAssetClass,
+      ForbiddenError,
     });
-    if (!hasAccess) {
-      throw new ForbiddenError('Forbidden');
-    }
 
     return this.userAssetClassService.getUserAssetClassList(userId);
   }
@@ -47,15 +45,13 @@ export class UserAssetClassResolver {
     @CurrentUser() requestUser: RequestUserInfo
   ): Promise<SetUserAssetClassListResponse> {
     const userId = args.userId || requestUser.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+    await this.caslAbilityFactory.canAccessOrFail({
       requestUser,
       userId,
       action: Action.MODIFY,
       subject: UserAssetClass,
+      ForbiddenError,
     });
-    if (!hasAccess) {
-      throw new ForbiddenError('Forbidden');
-    }
 
     return this.userAssetClassService.setUserAssetClassList(args, userId);
   }

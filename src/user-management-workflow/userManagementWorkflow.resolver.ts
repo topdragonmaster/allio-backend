@@ -28,15 +28,13 @@ export class UserManagementWorkflowResolver {
     @CurrentUser() requestUser: RequestUserInfo
   ): Promise<ManagementWorkflow | null> {
     const userId = args.userId || requestUser.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+    await this.caslAbilityFactory.canAccessOrFail({
       requestUser,
       userId,
       action: Action.READ,
       subject: UserManagementWorkflow,
+      ForbiddenError,
     });
-    if (!hasAccess) {
-      throw new ForbiddenError('Forbidden');
-    }
 
     return this.userManagementWorkflowService.getUserManagementWorkflow(userId);
   }
@@ -49,15 +47,13 @@ export class UserManagementWorkflowResolver {
     @CurrentUser() requestUser: RequestUserInfo
   ): Promise<UserManagementWorkflow> {
     const userId = args.userId || requestUser.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+    await this.caslAbilityFactory.canAccessOrFail({
       requestUser,
       userId,
       action: Action.MODIFY,
       subject: UserManagementWorkflow,
+      ForbiddenError,
     });
-    if (!hasAccess) {
-      throw new ForbiddenError('Forbidden');
-    }
 
     return this.userManagementWorkflowService.setUserManagementWorkflow(
       args,

@@ -26,15 +26,14 @@ export class UserInvestmentQuestionnaireResolver {
     @CurrentUser() requestUser: RequestUserInfo
   ): Promise<UserInvestmentQuestionnaireAnswer[]> {
     const userId = args.userId || requestUser.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+    await this.caslAbilityFactory.canAccessOrFail({
       requestUser,
       userId,
       action: Action.READ,
       subject: UserInvestmentQuestionnaireAnswer,
+      ForbiddenError,
     });
-    if (!hasAccess) {
-      throw new ForbiddenError('Forbidden');
-    }
+
     return this.userInvestmentQuestionnaireService.getAnswers(args, userId);
   }
 
@@ -46,15 +45,13 @@ export class UserInvestmentQuestionnaireResolver {
     @CurrentUser() requestUser: RequestUserInfo
   ): Promise<UserInvestmentQuestionnaireAnswer[]> {
     const userId = args.userId || requestUser.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+    await this.caslAbilityFactory.canAccessOrFail({
       requestUser,
       userId,
       action: Action.MODIFY,
       subject: UserInvestmentQuestionnaireAnswer,
+      ForbiddenError,
     });
-    if (!hasAccess) {
-      throw new ForbiddenError('Forbidden');
-    }
 
     return this.userInvestmentQuestionnaireService.setAnswer(args, userId);
   }

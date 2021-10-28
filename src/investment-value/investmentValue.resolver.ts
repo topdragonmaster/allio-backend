@@ -23,16 +23,13 @@ export class InvestmentValueResolver {
     @CurrentUser() requestUser: RequestUserInfo
   ) {
     const userId = args.userId || requestUser.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+    await this.caslAbilityFactory.canAccessOrFail({
       requestUser,
       userId,
       action: Action.READ,
       subject: UserInvestmentValue,
+      ForbiddenError,
     });
-
-    if (!hasAccess) {
-      throw new ForbiddenError('Forbidden');
-    }
 
     return this.userInvestmentValueService.getUserInvestmentValue(userId);
   }

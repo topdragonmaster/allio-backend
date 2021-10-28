@@ -23,15 +23,13 @@ export class RiskLevelResolver {
     @CurrentUser() requestUser: RequestUserInfo
   ) {
     const userId = args.userId || requestUser.uuid;
-    const hasAccess = await this.caslAbilityFactory.checkPolicyAccess({
+    await this.caslAbilityFactory.canAccessOrFail({
       requestUser,
       userId,
       action: Action.READ,
       subject: UserRiskLevel,
+      ForbiddenError,
     });
-    if (!hasAccess) {
-      throw new ForbiddenError('Forbidden');
-    }
 
     return this.riskLevelService.getUserRiskLevel(userId);
   }
