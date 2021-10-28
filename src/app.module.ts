@@ -20,9 +20,13 @@ import { AssetClassModule } from './asset-class/assetClass.module';
 import { UserAssetClassModule } from './user-asset-class/userAssetClass.module';
 import { ManagementWorkflowModule } from './management-workflow/managementWorkflow.module';
 import { UserManagementWorkflowModule } from './user-management-workflow/userManagementWorkflow.module';
-import { StaticAssetModule } from './static-asset/static-asset.module';
+import { StaticAssetModule } from './static-asset/staticAsset.module';
 import { InvestmentValueModule } from './investment-value/investmentValue.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
+import { AsyncLocalStorage } from 'async_hooks';
+import { EntityManager } from '@mikro-orm/core';
+
+export const storage = new AsyncLocalStorage<EntityManager>();
 
 @Module({
   imports: [
@@ -31,7 +35,11 @@ import { PortfolioModule } from './portfolio/portfolio.module';
       isGlobal: true,
       cache: true,
     }),
-    MikroOrmModule.forRoot(config),
+    MikroOrmModule.forRoot({
+      ...config,
+      registerRequestContext: false,
+      context: () => storage.getStore(),
+    }),
     GraphQLModule.forRoot({
       debug: !IS_PROD,
       playground: false,

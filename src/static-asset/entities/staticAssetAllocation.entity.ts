@@ -1,6 +1,7 @@
 import { Base } from '../../shared/base.entity';
 import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
 import { Roles } from '../../auth/types';
+import { registerEnumType } from '@nestjs/graphql';
 
 @Entity()
 export class StaticAssetAllocation extends Base<StaticAssetAllocation, 'id'> {
@@ -40,3 +41,8 @@ export enum AssetTableName {
 export enum StaticAssetCategory {
   Splash = 'Splash',
 }
+
+registerEnumType(StaticAssetCategory, {
+  name: 'StaticAssetCategory',
+  description: 'supported static asset category',
+});

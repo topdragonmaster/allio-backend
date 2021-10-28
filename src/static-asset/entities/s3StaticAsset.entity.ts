@@ -27,6 +27,13 @@ export class S3StaticAsset extends Base<S3StaticAsset, 'id'> {
 
   @Property({ default: [] })
   tag: string[];
+
+  @Property({ persist: false })
+  get url(): string {
+    return `https://${this.s3Bucket}.s3.${
+      this.s3Region ? this.s3Region + '.' : ''
+    }amazonaws.com/${this.s3Tag}`;
+  }
 }
 
 export enum S3StaticAssetType {

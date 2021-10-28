@@ -11,6 +11,11 @@ type AssetClass {
   updatedAt: DateTime!
 }
 
+input CategoryFilterItem {
+  category: StaticAssetCategory!
+  orderList: [Int!]
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -79,6 +84,7 @@ type Query {
   getAllQuestionnaire(id: ID): [InvestmentQuestionnaire!]!
   getAssetClassList(idList: [String!]): [AssetClass!]!
   getManagementWorkflowList(idList: [String!]): [ManagementWorkflow!]!
+  getStaticAssetList(categoryList: [CategoryFilterItem!], nameList: [String!], typeList: [TypeStaticAsset!]): [StaticAssetResponseItem!]!
   getUserAssetClassList(userId: String): [AssetClass!]!
   getUserInvestmentQuestionnaireAnswers(questionnaireId: String, userId: String): [UserInvestmentQuestionnaireAnswer!]!
   getUserInvestmentValue(userId: String): UserInvestmentValue!
@@ -98,6 +104,37 @@ type RiskLevel {
 type SetUserAssetClassListResponse {
   assetClassList: [AssetClass!]
   userId: String
+}
+
+type StaticAsset {
+  description: String!
+  id: ID!
+  name: String!
+  tag: [String!]!
+  url: String
+}
+
+"""supported static asset category"""
+enum StaticAssetCategory {
+  Splash
+}
+
+type StaticAssetResponseItem {
+  asset: StaticAsset!
+  category: StaticAssetCategory!
+  description: String!
+  id: ID!
+  name: String!
+  order: Int!
+  tag: [String!]!
+  type: TypeStaticAsset!
+}
+
+"""possible type of static asset"""
+enum TypeStaticAsset {
+  Animation
+  Image
+  Text
 }
 
 type UserInvestmentQuestionnaireAnswer {
