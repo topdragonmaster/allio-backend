@@ -135,6 +135,12 @@ export class RefreshRequestDTO {
 
 export class TokenResponseDTO {
   @ApiProperty({
+    example: 'b8dd9d97-37da-44cb-9e9f-96da62f6d415',
+    description: 'AWS Cognito user id',
+  })
+  userId: string;
+
+  @ApiProperty({
     example: 'eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ',
     description: 'AWS Cognito id token',
   })

@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Logger,
   Post,
   Put,
@@ -58,7 +57,7 @@ export class AuthController {
       const { session } = await this.authService.authenticateUser(
         authenticateRequest
       );
-      return this.authService.extractTokens(session);
+      return { user: this.authService.extractUserData(session) };
     } catch (err) {
       this.logger.debug(this.login.name, err);
       if (err.code === AwsCognitoErrorCode.NotAuthorizedException) {
@@ -75,14 +74,10 @@ export class AuthController {
     @CurrentUser() requestUser: RequestUserInfo
   ) {
     if (userId) {
-      const canAccessUserInfo =
-        await this.authService.checkCanAccessCognitoUser({
-          requestUser,
-          userId,
-        });
-      if (!canAccessUserInfo) {
-        throw new ForbiddenException();
-      }
+      await this.authService.checkCanAccessCognitoUser({
+        requestUser,
+        userId,
+      });
     }
 
     try {
@@ -140,17 +135,10 @@ export class AuthController {
     @Body() { userId, oldPassword, newPassword }: ChangePasswordRequestDTO,
     @CurrentUser() requestUser: RequestUserInfo
   ) {
-    if (userId) {
-      const canChangePassword =
-        await this.authService.checkCanAccessCognitoUser({
-          requestUser,
-          userId,
-          action: Action.ACCESS,
-        });
-      if (!canChangePassword) {
-        throw new ForbiddenException();
-      }
-    }
+    await this.authService.checkCanAccessCognitoUser({
+      requestUser,
+      userId,
+    });
 
     try {
       const { user } = await this.authService.authenticateUser({
@@ -198,11 +186,18 @@ export class AuthController {
     }
   }
 
-  @NoJwt()
+  @ApiBearerAuth()
   @Delete('delete-account')
-  async deleteAccount(@Body() deleteAccountRequest: AuthenticateRequestDTO) {
+  async deleteAccount(
+    @Body() { userId, ...userTokens }: RestoreUserDTO,
+    @CurrentUser() requestUser: RequestUserInfo
+  ) {
     try {
-      return await this.authService.deleteAccount(deleteAccountRequest);
+      const user = this.authService.getSignedInUser({
+        userId: userId || requestUser.uuid,
+        ...userTokens,
+      });
+      return await this.authService.deleteAccount(user);
     } catch (err) {
       this.logger.debug(this.deleteAccount.name, err);
       if (err.code === AwsCognitoErrorCode.NotAuthorizedException) {
@@ -216,23 +211,23 @@ export class AuthController {
   @Post('set-sms-mfa')
   async setSmsMfa(
     @Body()
-    { userId, phone_number: phoneNumber, ...userTokens }: SetSmsMfaRequestDTO,
+    {
+      userId: optionalUserId,
+      phone_number: phoneNumber,
+      ...userTokens
+    }: SetSmsMfaRequestDTO,
     @CurrentUser() requestUser: RequestUserInfo
   ) {
-    if (userId) {
-      const canSetSmsMfa = await this.authService.checkCanAccessCognitoUser({
-        requestUser,
-        userId,
-        action: Action.MODIFY,
-      });
-      if (!canSetSmsMfa) {
-        throw new ForbiddenException();
-      }
-    }
+    const userId = optionalUserId || requestUser.uuid;
+    await this.authService.checkCanAccessCognitoUser({
+      requestUser,
+      userId,
+      action: Action.MODIFY,
+    });
 
     try {
       const user = this.authService.getSignedInUser({
-        userId: userId || requestUser.uuid,
+        userId,
         ...userTokens,
       });
 
@@ -257,15 +252,10 @@ export class AuthController {
     @CurrentUser() requestUser: RequestUserInfo
   ) {
     if (userId) {
-      const canLogOut = await this.authService.checkCanAccessCognitoUser({
+      await this.authService.checkCanAccessCognitoUser({
         requestUser,
         userId,
-        action: Action.ACCESS,
       });
-
-      if (!canLogOut) {
-        throw new ForbiddenException();
-      }
     }
 
     try {
@@ -288,7 +278,7 @@ export class AuthController {
   async refresh(@Body() { refreshToken }: RefreshRequestDTO) {
     try {
       const session = await this.authService.refreshSession(refreshToken);
-      return this.authService.extractTokens(session);
+      return this.authService.extractUserData(session);
     } catch (err) {
       this.logger.debug(this.logout.name, err);
       throw new BadRequestException(err.message);

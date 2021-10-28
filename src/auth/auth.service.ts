@@ -84,11 +84,12 @@ export class AuthService {
     userId: string;
     action?: Action;
   }) {
-    const ability = await this.caslAbilityFactory.createForRequestUser({
+    return await this.caslAbilityFactory.canAccessOrFail({
       requestUser,
-      isMatchedUser: userId === requestUser?.uuid,
+      userId,
+      action,
+      subject: CognitoUserPool,
     });
-    return ability.can(action, CognitoUserPool);
   }
 
   async registerUser({
@@ -234,8 +235,7 @@ export class AuthService {
     return result === SUCCESS;
   }
 
-  async deleteAccount(deleteAccountRequest: AuthenticateRequestDTO) {
-    const { user } = await this.authenticateUser(deleteAccountRequest);
+  async deleteAccount(user: CognitoUser) {
     const result: string = await promisify(user.deleteUser.bind(user))();
     return result === SUCCESS;
   }
@@ -357,11 +357,13 @@ export class AuthService {
     return refreshedSession;
   }
 
-  extractTokens(session: CognitoUserSession): TokenResponseDTO {
+  extractUserData(session: CognitoUserSession): TokenResponseDTO {
+    const cognitoIdToken = session.getIdToken();
     return {
-      idToken: session.getIdToken().getJwtToken(),
+      idToken: cognitoIdToken.getJwtToken(),
       accessToken: session.getAccessToken().getJwtToken(),
       refreshToken: session.getRefreshToken().getToken(),
+      userId: cognitoIdToken.payload?.sub,
     };
   }
 
