@@ -2,48 +2,77 @@ import { Injectable } from '@nestjs/common';
 import { GetUserQuestionnaireAnswerArgs } from './dto/getUserQuestionnaireAnswer.args';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { UserInvestmentQuestionnaireAnswer } from './userInvestmentQuestionnaireAnswer.entity';
-import { EntityRepository, QueryOrder } from '@mikro-orm/core';
+import { EntityRepository, QueryOrder, MikroORM } from '@mikro-orm/core';
 import { SetUserQuestionnaireAnswerArgs } from './dto/setUserQuestionnaireAnswer.args';
 import { InvestmentQuestionnaire } from '../investment-questionnaire/investmentQuestionnaire.entity';
 import { InvestmentQuestionnaireOption } from '../investment-questionnaire/investmentQuestionnaireOption.entity';
 import { NotFoundError } from '../shared/errors';
-import { FilterQuery } from '@mikro-orm/core/typings';
+import { FilterQuery, Populate, Loaded } from '@mikro-orm/core/typings';
+import { QuestionnaireNotFound } from '../investment-questionnaire/utils/errors';
+import { PostgreSqlDriver, EntityManager } from '@mikro-orm/postgresql';
 
 @Injectable()
 export class UserInvestmentQuestionnaireService {
+  private readonly em: EntityManager;
   public constructor(
     @InjectRepository(UserInvestmentQuestionnaireAnswer)
     private readonly userQuestionnaireAnswerRepo: EntityRepository<UserInvestmentQuestionnaireAnswer>,
     @InjectRepository(InvestmentQuestionnaire)
     private readonly investmentQuestionnaireRepo: EntityRepository<InvestmentQuestionnaire>,
     @InjectRepository(InvestmentQuestionnaireOption)
-    private readonly investmentQuestionnaireOptionRepo: EntityRepository<InvestmentQuestionnaireOption>
-  ) {}
+    private readonly investmentQuestionnaireOptionRepo: EntityRepository<InvestmentQuestionnaireOption>,
+    private readonly orm: MikroORM<PostgreSqlDriver>
+  ) {
+    this.em = this.orm.em;
+  }
+
   public async getAnswers(
     args: GetUserQuestionnaireAnswerArgs,
     userId: string
   ) {
+    let where: FilterQuery<InvestmentQuestionnaire> = undefined;
+    if (args.questionnaireId) {
+      where = { id: args.questionnaireId };
+    }
+
+    return await this.getAnswersByQuestionnaireFilter({
+      where,
+      userId,
+    });
+  }
+
+  public async getAnswersByQuestionnaireFilter({
+    where,
+    userId,
+  }: {
+    where?: FilterQuery<InvestmentQuestionnaire>;
+    userId: string;
+  }) {
     if (!userId) {
       throw new NotFoundError('User not found');
     }
 
-    const filterQuery: FilterQuery<UserInvestmentQuestionnaireAnswer> = {
-      userId,
-    };
+    const qb = this.em
+      .createQueryBuilder(UserInvestmentQuestionnaireAnswer)
+      .where({ ...(where ? { questionnaire: where } : {}), userId })
+      .orderBy({ createdAt: QueryOrder.ASC });
 
-    if (args.questionnaireId) {
-      await this.investmentQuestionnaireRepo.findOneOrFail(
-        { id: args.questionnaireId },
-        { failHandler: (): any => new NotFoundError('Questionnaire not found') }
-      );
-      filterQuery.questionnaire = args.questionnaireId;
-    }
+    return await qb.getResult();
+  }
 
-    return this.userQuestionnaireAnswerRepo.find(filterQuery, {
-      orderBy: {
-        createdAt: QueryOrder.ASC,
-      },
-    });
+  populateUserAnswers<
+    T = UserInvestmentQuestionnaireAnswer,
+    P extends string | keyof T | Populate<T> = Populate<T>
+  >(answers: T, populate: P): Promise<Loaded<T, P>>;
+  populateUserAnswers<
+    T = UserInvestmentQuestionnaireAnswer,
+    P extends string | keyof T | Populate<T> = Populate<T>
+  >(answers: T[], populate: P): Promise<Loaded<T[], P>>;
+  public async populateUserAnswers<
+    T = UserInvestmentQuestionnaireAnswer,
+    P extends string | keyof T | Populate<T> = Populate<T>
+  >(answers: T | T[], populate: P): Promise<Loaded<T | T[], P>> {
+    return await this.em.populate(answers, populate);
   }
 
   public async setAnswer(
@@ -58,7 +87,7 @@ export class UserInvestmentQuestionnaireService {
     const questionnaire: InvestmentQuestionnaire =
       await this.investmentQuestionnaireRepo.findOneOrFail(
         { id: questionnaireId },
-        { failHandler: (): any => new NotFoundError('Questionnaire not found') }
+        { failHandler: (): any => new QuestionnaireNotFound() }
       );
 
     const oldUserAnswerList: UserInvestmentQuestionnaireAnswer[] =

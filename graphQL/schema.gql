@@ -45,6 +45,7 @@ type InvestmentQuestionnaireOption {
   description: String!
   id: ID!
   option: String!
+  order: Int!
   updatedAt: DateTime!
 }
 

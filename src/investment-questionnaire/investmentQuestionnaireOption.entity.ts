@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Base } from '../shared/base.entity';
 import { InvestmentQuestionnaire } from './investmentQuestionnaire.entity';
 
@@ -15,6 +15,10 @@ export class InvestmentQuestionnaireOption extends Base<
 
   @ManyToOne(() => InvestmentQuestionnaire)
   questionnaire: InvestmentQuestionnaire;
+
+  @Field(() => Int)
+  @Property()
+  order!: number;
 
   @Field()
   @Property({ unique: true })

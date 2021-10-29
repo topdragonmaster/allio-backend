@@ -11,6 +11,8 @@ export class InvestmentQuestionnaireResolver {
 
   @Query(() => [InvestmentQuestionnaire], { name: 'getAllQuestionnaire' })
   async getAllQuestionnaire(@Args() args: GetAllQuestionnaireArgs) {
-    return this.investmentQuestionnaireService.findAll(args);
+    return this.investmentQuestionnaireService.findAllOrSpecificQuestionnaire(
+      args
+    );
   }
 }

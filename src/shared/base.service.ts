@@ -1,7 +1,7 @@
 import {
   EntityRepository,
   FilterQuery,
-  FindOneOptions,
+  FindOptions,
   Loaded,
   Populate,
   QueryOrderMap,
@@ -24,7 +24,7 @@ export abstract class BaseService<T> {
   }
 
   findAll<P extends Populate<T> = any>(
-    options?: FindOneOptions<T, P>
+    options?: FindOptions<T, P>
   ): Promise<Loaded<T, P>[]>;
   findAll<P extends Populate<T> = any>(
     populate?: P,
@@ -33,13 +33,38 @@ export abstract class BaseService<T> {
     offset?: number
   ): Promise<Loaded<T, P>[]>;
   async findAll<P extends Populate<T> = any>(
-    arg1?: FindOneOptions<T, P> | P,
+    arg1?: FindOptions<T, P> | P,
     arg2?: QueryOrderMap,
     arg3?: number,
     arg4?: number
   ) {
     try {
       return this.genericRepository.findAll(arg1, arg2, arg3, arg4);
+    } catch (err) {
+      this.catchError(err);
+    }
+  }
+
+  find<P extends Populate<T> = any>(
+    where: FilterQuery<T>,
+    options?: FindOptions<T, P>
+  ): Promise<Loaded<T, P>[]>;
+  find<P extends Populate<T> = any>(
+    where: FilterQuery<T>,
+    populate?: P,
+    orderBy?: QueryOrderMap,
+    limit?: number,
+    offset?: number
+  ): Promise<Loaded<T, P>[]>;
+  async find<P extends Populate<T> = any>(
+    arg1: FilterQuery<T>,
+    arg2?: FindOptions<T, P> | P,
+    arg3?: QueryOrderMap,
+    arg4?: number,
+    arg5?: number
+  ) {
+    try {
+      return this.genericRepository.find(arg1, arg2, arg3, arg4, arg5);
     } catch (err) {
       this.catchError(err);
     }
@@ -52,12 +77,12 @@ export abstract class BaseService<T> {
   ): Promise<Loaded<T, P> | null>;
   findOne<P extends Populate<T> = any>(
     where: FilterQuery<T>,
-    populate?: FindOneOptions<T, P>,
+    populate?: FindOptions<T, P>,
     orderBy?: QueryOrderMap
   ): Promise<Loaded<T, P> | null>;
   async findOne<P extends Populate<T> = any>(
     arg1: FilterQuery<T>,
-    arg2?: P | FindOneOptions<T, P>,
+    arg2?: P | FindOptions<T, P>,
     arg3?: QueryOrderMap
   ) {
     try {

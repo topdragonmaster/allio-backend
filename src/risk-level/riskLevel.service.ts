@@ -1,34 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { UserRiskLevel } from './entities/userRiskLevel.entity';
-import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/core';
-import { NotFoundError } from '../shared/errors';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { Injectable, Logger } from '@nestjs/common';
+import { BaseService } from '../shared/base.service';
+import { RiskLevel } from './entities/riskLevel.entity';
 
 @Injectable()
-export class RiskLevelService {
-  public constructor(
-    @InjectRepository(UserRiskLevel)
-    private readonly userRiskLevelRepository: EntityRepository<UserRiskLevel>
-  ) {}
-
-  public async getUserRiskLevel(userId: string): Promise<UserRiskLevel> {
-    if (!userId) {
-      throw new NotFoundError('User not found');
-    }
-    const userRiskLevel: UserRiskLevel =
-      await this.userRiskLevelRepository.findOne(
-        { userId },
-        {
-          populate: {
-            riskLevel: true,
-          },
-        }
-      );
-
-    if (!userRiskLevel) {
-      throw new NotFoundError('User risk level not found');
-    }
-
-    return userRiskLevel;
+export class RiskLevelService extends BaseService<RiskLevel> {
+  protected readonly logger: Logger;
+  constructor(
+    @InjectRepository(RiskLevel)
+    private readonly riskLevelRepository: EntityRepository<RiskLevel>
+  ) {
+    super(riskLevelRepository);
+    this.logger = new Logger(RiskLevelService.name);
   }
 }
