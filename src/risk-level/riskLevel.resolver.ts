@@ -35,23 +35,10 @@ export class RiskLevelResolver {
       ForbiddenError,
     });
 
-    let userRiskLevel: UserRiskLevel;
+    const userRiskLevel = await this.userRiskLevelService.tryGetUserRiskLevel(
+      userId
+    );
 
-    try {
-      const riskLevel =
-        await this.userRiskLevelService.mapInvestmentQuestionToRiskLevel(
-          userId
-        );
-      userRiskLevel = await this.userRiskLevelService.setUserRiskLevel(
-        userId,
-        riskLevel
-      );
-    } catch (err) {
-      this.logger.debug(err);
-    }
-    if (!userRiskLevel) {
-      userRiskLevel = await this.userRiskLevelService.getUserRiskLevel(userId);
-    }
     if (!userRiskLevel) {
       throw new NotFoundError('User risk level not found');
     }

@@ -1,3 +1,15 @@
+import {
+  AnyEntity,
+  EntityData,
+  FilterQuery,
+  FindOneOptions,
+  FindOneOrFailOptions,
+  FindOptions,
+  Loaded,
+  New,
+  Populate,
+  QueryOrderMap,
+} from '@mikro-orm/core';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import {
   Injectable,
@@ -16,16 +28,88 @@ export abstract class BaseService<T> {
     throw new BadRequestException(err);
   }
 
-  async findAll(...args: Parameters<EntityRepository<T>['findAll']>) {
+  findAll<P extends Populate<T> = any>(
+    options?: FindOptions<T, P>
+  ): Promise<Loaded<T, P>[]>;
+  findAll<P extends Populate<T> = any>(
+    populate?: P,
+    orderBy?: QueryOrderMap,
+    limit?: number,
+    offset?: number
+  ): Promise<Loaded<T, P>[]>;
+  async findAll(...args) {
     return this.genericRepository.findAll(...args).catch(this.catchError);
   }
 
-  async find(...args: Parameters<EntityRepository<T>['find']>) {
-    return this.genericRepository.find(...args).catch(this.catchError);
+  find<P extends Populate<T> = any>(
+    where: FilterQuery<T>,
+    options?: FindOptions<T, P>
+  ): Promise<Loaded<T, P>[]>;
+  find<P extends Populate<T> = any>(
+    where: FilterQuery<T>,
+    populate?: P,
+    orderBy?: QueryOrderMap,
+    limit?: number,
+    offset?: number
+  ): Promise<Loaded<T, P>[]>;
+  async find<P extends Populate<T> = any>(
+    arg1: FilterQuery<T>,
+    arg2: FindOptions<T, P> | P,
+    arg3?: QueryOrderMap,
+    arg4?: number,
+    arg5?: number
+  ) {
+    return this.genericRepository
+      .find(arg1, arg2, arg3, arg4, arg5)
+      .catch(this.catchError);
   }
 
-  async findOne(...args: Parameters<EntityRepository<T>['findOne']>) {
-    return this.genericRepository.findOne(...args).catch(this.catchError);
+  findOne<P extends Populate<T> = any>(
+    where: FilterQuery<T>,
+    populate?: P,
+    orderBy?: QueryOrderMap
+  ): Promise<Loaded<T, P> | null>;
+  findOne<P extends Populate<T> = any>(
+    where: FilterQuery<T>,
+    populate?: FindOneOptions<T, P>,
+    orderBy?: QueryOrderMap
+  ): Promise<Loaded<T, P> | null>;
+  async findOne<P extends Populate<T> = any>(
+    arg1: FilterQuery<T>,
+    arg2?: P | FindOptions<T, P>,
+    arg3?: QueryOrderMap
+  ) {
+    return this.genericRepository
+      .findOne(arg1, arg2, arg3)
+      .catch(this.catchError);
+  }
+
+  findOneOrFail<P extends Populate<T> = any>(
+    where: FilterQuery<T>,
+    populate?: P,
+    orderBy?: QueryOrderMap
+  ): Promise<Loaded<T, P>>;
+  findOneOrFail<P extends Populate<T> = any>(
+    where: FilterQuery<T>,
+    populate?: FindOneOrFailOptions<T, P>,
+    orderBy?: QueryOrderMap
+  ): Promise<Loaded<T, P>>;
+  async findOneOrFail<P extends Populate<T> = any>(
+    arg1: FilterQuery<T>,
+    arg2?: P | FindOneOrFailOptions<T, P>,
+    arg3?: QueryOrderMap
+  ) {
+    return this.genericRepository
+      .findOneOrFail(arg1, arg2, arg3)
+      .catch(this.catchError);
+  }
+
+  create<P extends Populate<T> = string[]>(data: EntityData<T>): New<T, P> {
+    try {
+      return this.genericRepository.create(data);
+    } catch (err) {
+      this.catchError(err);
+    }
   }
 
   async update(
@@ -48,6 +132,12 @@ export abstract class BaseService<T> {
     }
   }
 
+  async persistAndFlush(entity: AnyEntity | AnyEntity[]) {
+    return this.genericRepository
+      .persistAndFlush(entity)
+      .catch(this.catchError);
+  }
+
   async save(entity: T): Promise<T> {
     try {
       const mergedEntity = this.genericRepository.create(entity);
@@ -58,7 +148,12 @@ export abstract class BaseService<T> {
     }
   }
 
-  async delete(entity: T): Promise<void> {
-    return this.genericRepository.removeAndFlush(entity).catch(this.catchError);
+  async delete(entity: AnyEntity | AnyEntity[]): Promise<void> {
+    try {
+      this.genericRepository.remove(entity);
+      return await this.genericRepository.flush();
+    } catch (err) {
+      this.catchError(err);
+    }
   }
 }

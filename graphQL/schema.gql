@@ -88,7 +88,7 @@ type Query {
   getStaticAssetList(categoryList: [CategoryFilterItem!], nameList: [String!], typeList: [TypeStaticAsset!]): [StaticAssetResponseItem!]!
   getUserAssetClassList(userId: String): [AssetClass!]!
   getUserInvestmentQuestionnaireAnswers(questionnaireId: String, userId: String): [UserInvestmentQuestionnaireAnswer!]!
-  getUserInvestmentValue(userId: String): UserInvestmentValue!
+  getUserInvestmentValueList(userId: String): [UserInvestmentValue!]!
   getUserManagementWorkflow(userId: String): ManagementWorkflow
   getUserRiskLevel(userId: String): UserRiskLevel!
 }

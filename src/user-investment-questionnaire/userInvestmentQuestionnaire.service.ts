@@ -9,7 +9,11 @@ import { InvestmentQuestionnaireOption } from '../investment-questionnaire/inves
 import { NotFoundError } from '../shared/errors';
 import { FilterQuery, Populate, Loaded } from '@mikro-orm/core/typings';
 import { QuestionnaireNotFound } from '../investment-questionnaire/utils/errors';
-import { PostgreSqlDriver, EntityManager } from '@mikro-orm/postgresql';
+import {
+  PostgreSqlDriver,
+  EntityManager,
+  QueryBuilder,
+} from '@mikro-orm/postgresql';
 
 @Injectable()
 export class UserInvestmentQuestionnaireService {
@@ -44,18 +48,33 @@ export class UserInvestmentQuestionnaireService {
   public async getAnswersByQuestionnaireFilter({
     where,
     userId,
+    selectParam,
+    joinAndSelectParams,
+    tableAlias,
   }: {
     where?: FilterQuery<InvestmentQuestionnaire>;
+    tableAlias?: string;
+    selectParam?: Parameters<QueryBuilder['select']>;
     userId: string;
+    joinAndSelectParams?: Parameters<QueryBuilder['joinAndSelect']>[];
   }) {
     if (!userId) {
       throw new NotFoundError('User not found');
     }
 
-    const qb = this.em
-      .createQueryBuilder(UserInvestmentQuestionnaireAnswer)
-      .where({ ...(where ? { questionnaire: where } : {}), userId })
+    let qb = this.em
+      .createQueryBuilder(UserInvestmentQuestionnaireAnswer, tableAlias)
+      .select(selectParam || '*')
+      .where({
+        ...(where ? { questionnaire: where } : {}),
+        userId: userId,
+      })
       .orderBy({ createdAt: QueryOrder.ASC });
+    if (joinAndSelectParams) {
+      joinAndSelectParams.forEach((joinAndSelectParam) => {
+        qb = qb.joinAndSelect(...joinAndSelectParam);
+      });
+    }
 
     return await qb.getResult();
   }

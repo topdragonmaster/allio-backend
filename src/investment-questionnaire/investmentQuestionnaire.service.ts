@@ -4,7 +4,8 @@ import {
   InvestmentQuestionnaireCategory,
 } from './investmentQuestionnaire.entity';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository, FindOptions, QueryOrder } from '@mikro-orm/core';
+import { FindOptions, QueryOrder } from '@mikro-orm/core';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import { GetAllQuestionnaireArgs } from './dto/getAllQuestionnaire.args';
 import { BaseService } from '../shared/base.service';
 import { QuestionnaireNotFound } from './utils/errors';
