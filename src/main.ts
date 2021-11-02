@@ -6,10 +6,11 @@ import {
 } from '@nestjs/platform-fastify';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule, storage } from './app.module';
+import { AppModule } from './app.module';
 import { MikroORM } from '@mikro-orm/core';
 import { IS_PROD } from './shared/constants';
 import { ValidationPipe } from '@nestjs/common';
+import { storage } from './shared/utils/loadModule';
 
 global['fetch'] = require('node-fetch');
 

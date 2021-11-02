@@ -1,12 +1,7 @@
 import 'reflect-metadata';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import loadEnv from './config/loadEnv';
-import loadSecret from './config/loadSecret';
-import config from './mikro-orm.config';
 import { AuthModule } from './auth/auth.module';
 import { CaslAbilityFactory } from './auth/casl-ability.factory';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -23,23 +18,15 @@ import { UserManagementWorkflowModule } from './user-management-workflow/userMan
 import { StaticAssetModule } from './static-asset/staticAsset.module';
 import { InvestmentValueModule } from './investment-value/investmentValue.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
-import { AsyncLocalStorage } from 'async_hooks';
-import { EntityManager } from '@mikro-orm/core';
-
-export const storage = new AsyncLocalStorage<EntityManager>();
+import {
+  loadConfigModule,
+  loadMikroOrmModule,
+} from './shared/utils/loadModule';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      load: [loadSecret('secrets'), loadEnv],
-      isGlobal: true,
-      cache: true,
-    }),
-    MikroOrmModule.forRoot({
-      ...config,
-      registerRequestContext: false,
-      context: () => storage.getStore(),
-    }),
+    loadMikroOrmModule(),
+    loadConfigModule(),
     GraphQLModule.forRoot({
       debug: !IS_PROD,
       playground: false,

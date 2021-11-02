@@ -17,6 +17,7 @@ import {
   Logger,
   BadRequestException,
 } from '@nestjs/common';
+import { EntityData, FilterQuery } from '@mikro-orm/core/typings';
 
 @Injectable()
 export abstract class BaseService<T> {
@@ -152,6 +153,34 @@ export abstract class BaseService<T> {
     try {
       this.genericRepository.remove(entity);
       return await this.genericRepository.flush();
+    } catch (err) {
+      this.catchError(err);
+    }
+  }
+
+  public async upsert({
+    data,
+    where,
+    flush = false,
+  }: {
+    data: EntityData<T>;
+    where: FilterQuery<T>;
+    flush?: boolean;
+  }) {
+    try {
+      let entity = await this.genericRepository.findOne(where);
+      if (entity) {
+        this.genericRepository.assign(entity, data);
+      } else {
+        entity = this.genericRepository.create(data);
+      }
+
+      if (flush) {
+        await this.genericRepository.persistAndFlush(entity);
+      } else {
+        await this.genericRepository.persist(entity);
+      }
+      return entity;
     } catch (err) {
       this.catchError(err);
     }
