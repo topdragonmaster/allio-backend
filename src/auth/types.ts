@@ -8,6 +8,8 @@ import { UserAssetClass } from '../user-asset-class/entities/userAssetClass.enti
 import { UserManagementWorkflow } from '../user-management-workflow/entities/userManagementWorkflow.entity';
 import { UserInvestmentValue } from '../investment-value/entities/userInvestmentValue.entity';
 import { InvestmentValue } from '../investment-value/entities/investmentValue.entity';
+import { StaticAssetAllocation } from '../static-asset/entities/staticAssetAllocation.entity';
+import { registerEnumType } from '@nestjs/graphql';
 
 export class RegisterRequestDTO {
   @ApiProperty({
@@ -232,6 +234,8 @@ export type Subjects =
   | UserManagementWorkflow
   | typeof UserInvestmentValue
   | InvestmentValue
+  | StaticAssetAllocation
+  | typeof StaticAssetAllocation
   | 'all';
 
 export type AppAbility = Ability<[Action, Subjects]>;
@@ -254,7 +258,7 @@ export interface RequestUserInfo {
 }
 
 export enum Roles {
-  ADMIN = 'Admin',
+  Admin = 'Admin',
 }
 
 export interface SetMfaPreferenceProps {
@@ -265,3 +269,8 @@ export interface SetMfaPreferenceProps {
   };
   phoneNumber?: string;
 }
+
+registerEnumType(Roles, {
+  name: 'Roles',
+  description: 'available user roles',
+});

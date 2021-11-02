@@ -11,8 +11,8 @@ export class TextStaticAsset extends Base<TextStaticAsset, 'id'> {
   name: string;
 
   @Property({ default: '' })
-  description: string;
+  description: string = '';
 
   @Property({ default: [] })
-  tag: string[];
+  tag: string[] = [];
 }

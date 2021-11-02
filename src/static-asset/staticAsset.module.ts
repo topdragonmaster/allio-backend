@@ -5,6 +5,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { S3StaticAsset } from './entities/s3StaticAsset.entity';
 import { TextStaticAsset } from './entities/textStaticAsset.entity';
 import { StaticAssetAllocation } from './entities/staticAssetAllocation.entity';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { StaticAssetAllocation } from './entities/staticAssetAllocation.entity';
       TextStaticAsset,
       StaticAssetAllocation,
     ]),
+    AuthModule,
   ],
   providers: [StaticAssetResolver, StaticAssetService],
 })

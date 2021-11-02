@@ -76,6 +76,7 @@ enum ManagementWorkflowKey {
 }
 
 type Mutation {
+  setStaticAssetList(staticAssetInputList: [StaticAssetAllocationInput!]!): [StaticAssetResponseItem!]!
   setUserAssetClassList(assetClassIdList: [String!]!, userId: String): SetUserAssetClassListResponse!
   setUserInvestmentQuestionnaireAnswer(answer: String, questionnaireId: String!, selectedOptionIdList: [String!], userId: String): [UserInvestmentQuestionnaireAnswer!]!
   setUserManagementWorkflow(managementWorkflowId: String!, userId: String): UserManagementWorkflow!
@@ -102,6 +103,11 @@ type RiskLevel {
   updatedAt: DateTime!
 }
 
+"""available user roles"""
+enum Roles {
+  Admin
+}
+
 type SetUserAssetClassListResponse {
   assetClassList: [AssetClass!]
   userId: String
@@ -115,9 +121,29 @@ type StaticAsset {
   url: String
 }
 
+input StaticAssetAllocationInput {
+  asset: StaticAssetInput
+  category: StaticAssetCategory
+  description: String
+  id: ID
+  name: String
+  order: Int
+  role: [Roles!]
+  tag: [String!]
+  type: TypeStaticAsset
+}
+
 """supported static asset category"""
 enum StaticAssetCategory {
   Splash
+}
+
+input StaticAssetInput {
+  description: String!
+  name: String!
+  s3Bucket: String
+  s3Tag: String
+  tag: [String!]
 }
 
 type StaticAssetResponseItem {

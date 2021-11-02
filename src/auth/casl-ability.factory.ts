@@ -49,7 +49,7 @@ export class CaslAbilityFactory {
       Ability as AbilityClass<AppAbility>
     );
 
-    const isAdmin = requestUser?.roles.some((role) => role === Roles.ADMIN);
+    const isAdmin = requestUser?.roles.some((role) => role === Roles.Admin);
 
     if (isAdmin) {
       // for admin user

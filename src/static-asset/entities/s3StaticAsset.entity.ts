@@ -14,7 +14,7 @@ export class S3StaticAsset extends Base<S3StaticAsset, 'id'> {
   type: S3StaticAssetType;
 
   @Property({ default: '' })
-  description: string;
+  description: string = '';
 
   @Property()
   s3Bucket: string;
@@ -23,10 +23,10 @@ export class S3StaticAsset extends Base<S3StaticAsset, 'id'> {
   s3Tag: string;
 
   @Property({ default: '' })
-  s3Region: string;
+  s3Region: string = '';
 
   @Property({ default: [] })
-  tag: string[];
+  tag: string[] = [];
 
   @Property({ persist: false })
   get url(): string {

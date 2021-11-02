@@ -12,7 +12,7 @@ export class StaticAssetAllocation extends Base<StaticAssetAllocation, 'id'> {
   name: string;
 
   @Property({ default: '' })
-  description: string;
+  description: string = '';
 
   @Enum(() => AssetTableName)
   assetTable: AssetTableName;
@@ -27,10 +27,10 @@ export class StaticAssetAllocation extends Base<StaticAssetAllocation, 'id'> {
   order: number;
 
   @Enum({ items: () => Roles, array: true, default: [] })
-  role: Roles[];
+  role: Roles[] = [];
 
   @Property({ default: [] })
-  tag: string[];
+  tag: string[] = [];
 }
 
 export enum AssetTableName {
