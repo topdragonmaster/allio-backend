@@ -141,6 +141,7 @@ export class AuthService {
   }
 
   async confirmRegistration({ identity, code }: ConfirmRegistrationRequestDTO) {
+    // for verifying registration confirmation code
     const user = this.getUser(identity);
 
     const result = await promisify(user.confirmRegistration.bind(user))(
@@ -152,6 +153,7 @@ export class AuthService {
   }
 
   async resendConfirmationCode({ identity }: GeneralIdentityRequestDTO) {
+    // for resending registration confirmation code
     const user = this.getUser(identity);
 
     const {
@@ -188,7 +190,55 @@ export class AuthService {
           Value,
         })
     );
-    return promisify(user.updateAttributes.bind(user))(userAttributes);
+    const result = await promisify(user.updateAttributes.bind(user))(
+      userAttributes
+    );
+    return result === SUCCESS;
+  }
+
+  async getAttributeVerificationCode({
+    user,
+    attribute = 'phone_number',
+  }: {
+    user: CognitoUser;
+    attribute?: string;
+  }) {
+    // for sending confirmation code to user's attribute after registration
+    const result = await new Promise((resolve, reject) => {
+      user.getAttributeVerificationCode(attribute, {
+        onSuccess: (message) => {
+          resolve(message);
+        },
+        onFailure: (err) => {
+          reject(err);
+        },
+        inputVerificationCode: null,
+      });
+    });
+    return result === SUCCESS;
+  }
+
+  async verifyAttribute({
+    user,
+    code,
+    attribute = 'phone_number',
+  }: {
+    user: CognitoUser;
+    code: string;
+    attribute?: string;
+  }) {
+    // for verifying confirmation code to user's attribute after registration
+    const result = await new Promise((resolve, reject) => {
+      user.verifyAttribute(attribute, code, {
+        onSuccess: (message) => {
+          resolve(message);
+        },
+        onFailure: (err) => {
+          reject(err);
+        },
+      });
+    });
+    return result === SUCCESS;
   }
 
   async changePassword({
@@ -228,8 +278,12 @@ export class AuthService {
     const user = this.getUser(identity);
     const result = await new Promise<string>((resolve, reject) => {
       user.confirmPassword(code, newPassword, {
-        onSuccess: (message) => resolve(message),
-        onFailure: (err) => reject(err),
+        onSuccess: (message) => {
+          resolve(message);
+        },
+        onFailure: (err) => {
+          reject(err);
+        },
       });
     });
     return result === SUCCESS;
@@ -269,6 +323,8 @@ export class AuthService {
         attributes.phone_number_verified === 'false'
       ) {
         // if no phone is verified
+        // send the verification code to the user's phone number
+        await this.getAttributeVerificationCode({ user });
         throw new BadRequestException(
           'Please verify your phone number before enabling SMS MFA'
         );

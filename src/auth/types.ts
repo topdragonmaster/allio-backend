@@ -211,6 +211,22 @@ export class SetSmsMfaRequestDTO extends RestoreUserDTO {
   phone_number?: string;
 }
 
+export class VerifyPhoneRequestDTO extends RestoreUserDTO {
+  @ApiProperty({
+    example: '123456',
+    description: 'Verification code',
+  })
+  code: string;
+}
+
+export class SetAttributesDTO extends RestoreUserDTO {
+  @ApiProperty({
+    example: '{ "phone_number": "+1415000000", "nick_name": "John" }',
+    description: 'object of attributes name and value pairs',
+  })
+  attributes: Record<string, string>;
+}
+
 export enum Action {
   MANAGE = 'manage',
   CREATE = 'create',

@@ -8,7 +8,6 @@ import { InvestmentQuestionnaireCategory } from '../investment-questionnaire/inv
 import { UserInvestmentQuestionnaireService } from '../user-investment-questionnaire/userInvestmentQuestionnaire.service';
 import { ApolloError } from 'apollo-server-core';
 import { InvestmentValueService } from './investmentValue.service';
-import { InvestmentValue } from './entities/investmentValue.entity';
 
 @Injectable()
 export class UserInvestmentValueService extends BaseService<UserInvestmentValue> {

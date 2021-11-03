@@ -17,7 +17,6 @@ import {
   Logger,
   BadRequestException,
 } from '@nestjs/common';
-import { EntityData, FilterQuery } from '@mikro-orm/core/typings';
 
 @Injectable()
 export abstract class BaseService<T> {

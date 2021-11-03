@@ -27,6 +27,8 @@ import {
   RestoreUserDTO,
   SetSmsMfaRequestDTO,
   Action,
+  VerifyPhoneRequestDTO,
+  SetAttributesDTO,
 } from './types';
 
 @UseGuards(PoliciesGuard)
@@ -87,7 +89,35 @@ export class AuthController {
       });
       return await this.authService.getUserAttributes(user);
     } catch (err) {
-      this.logger.debug(this.logout.name, err);
+      this.logger.debug(this.getUserInfo.name, err);
+      if (err.code === AwsCognitoErrorCode.NotAuthorizedException) {
+        throw new UnauthorizedException(err.message);
+      }
+      throw new BadRequestException(err.message);
+    }
+  }
+
+  @ApiBearerAuth()
+  @Post('set-user-info')
+  async setUserInfo(
+    @Body() { userId, attributes, ...userTokens }: SetAttributesDTO,
+    @CurrentUser() requestUser: RequestUserInfo
+  ) {
+    if (userId) {
+      await this.authService.checkCanAccessCognitoUser({
+        requestUser,
+        userId,
+      });
+    }
+
+    try {
+      const user = this.authService.getSignedInUser({
+        userId: userId || requestUser.uuid,
+        ...userTokens,
+      });
+      return await this.authService.setUserAttributes(user, attributes);
+    } catch (err) {
+      this.logger.debug(this.setUserInfo.name, err);
       if (err.code === AwsCognitoErrorCode.NotAuthorizedException) {
         throw new UnauthorizedException(err.message);
       }
@@ -96,7 +126,8 @@ export class AuthController {
   }
 
   @ApiOperation({
-    summary: "confirm on user's identity whether it is email or phone",
+    summary:
+      "confirm user's identity to complete registration; identity can be email or phone",
   })
   @NoJwt()
   @Post('confirm')
@@ -111,7 +142,7 @@ export class AuthController {
 
   @ApiOperation({
     summary:
-      "resend confirm code to user's identity whether it is email or phone",
+      "resend confirmation code to user's identity to complete registration; identity can be email or phone",
   })
   @NoJwt()
   @Post('resend')
@@ -125,6 +156,69 @@ export class AuthController {
       return this.authService.extractCodeDeliveryDetails(codeDeliveryDetails);
     } catch (err) {
       this.logger.debug(this.resend.name, err);
+      throw new BadRequestException(err.message);
+    }
+  }
+
+  @ApiOperation({
+    summary:
+      "send confirmation code to user's registered phone after registration is confirmed",
+  })
+  @ApiBearerAuth()
+  @Post('resend-phone')
+  async resendPhone(
+    @Body() { userId: optionalUserId, ...userTokens }: RestoreUserDTO,
+    @CurrentUser() requestUser: RequestUserInfo
+  ) {
+    if (optionalUserId) {
+      await this.authService.checkCanAccessCognitoUser({
+        requestUser,
+        userId: optionalUserId,
+      });
+    }
+
+    const userId = optionalUserId || requestUser.uuid;
+
+    try {
+      const user = this.authService.getSignedInUser({ userId, ...userTokens });
+      return await this.authService.getAttributeVerificationCode({ user });
+    } catch (err) {
+      this.logger.debug(this.resendPhone.name, err);
+      if (err.code === AwsCognitoErrorCode.NotAuthorizedException) {
+        throw new UnauthorizedException(err.message);
+      }
+      throw new BadRequestException(err.message);
+    }
+  }
+
+  @ApiOperation({
+    summary:
+      "verify confirmation code to user's registered phone after registration is confirmed",
+  })
+  @ApiBearerAuth()
+  @Post('verify-phone')
+  async verifyPhone(
+    @Body()
+    { userId: optionalUserId, code, ...userTokens }: VerifyPhoneRequestDTO,
+    @CurrentUser() requestUser: RequestUserInfo
+  ) {
+    if (optionalUserId) {
+      await this.authService.checkCanAccessCognitoUser({
+        requestUser,
+        userId: optionalUserId,
+      });
+    }
+
+    const userId = optionalUserId || requestUser.uuid;
+
+    try {
+      const user = this.authService.getSignedInUser({ userId, ...userTokens });
+      return await this.authService.verifyAttribute({ user, code });
+    } catch (err) {
+      this.logger.debug(this.verifyPhone.name, err);
+      if (err.code === AwsCognitoErrorCode.NotAuthorizedException) {
+        throw new UnauthorizedException(err.message);
+      }
       throw new BadRequestException(err.message);
     }
   }
@@ -237,7 +331,7 @@ export class AuthController {
         phoneNumber,
       });
     } catch (err) {
-      this.logger.debug(this.logout.name, err);
+      this.logger.debug(this.setSmsMfa.name, err);
       if (err.code === AwsCognitoErrorCode.NotAuthorizedException) {
         throw new UnauthorizedException(err.message);
       }
@@ -280,7 +374,7 @@ export class AuthController {
       const session = await this.authService.refreshSession(refreshToken);
       return this.authService.extractUserData(session);
     } catch (err) {
-      this.logger.debug(this.logout.name, err);
+      this.logger.debug(this.refresh.name, err);
       throw new BadRequestException(err.message);
     }
   }
