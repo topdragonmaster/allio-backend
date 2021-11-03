@@ -8,7 +8,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { Base } from '../shared/base.entity';
+import { Base } from '../../shared/base.entity';
 import { InvestmentQuestionnaireOption } from './investmentQuestionnaireOption.entity';
 
 @ObjectType()

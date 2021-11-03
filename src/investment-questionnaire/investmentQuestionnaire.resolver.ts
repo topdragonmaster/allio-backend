@@ -1,5 +1,5 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
-import { InvestmentQuestionnaire } from './investmentQuestionnaire.entity';
+import { InvestmentQuestionnaire } from './entities/investmentQuestionnaire.entity';
 import { InvestmentQuestionnaireService } from './investmentQuestionnaire.service';
 import { GetAllQuestionnaireArgs } from './dto/getAllQuestionnaire.args';
 

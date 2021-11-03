@@ -15,7 +15,7 @@ export class SeedConfig {
 
   public getUserId(): string {
     if (this.isDev) {
-      return 'f6494e68-3ce7-4cf4-98c3-b2f941526990';
+      return 'c0414693-e7eb-46b3-9689-856b4de83940';
     }
 
     return null;

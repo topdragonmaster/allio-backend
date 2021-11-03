@@ -2,7 +2,7 @@ import { UserRiskLevel } from './entities/userRiskLevel.entity';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { NotFoundError } from '../shared/errors';
-import { InvestmentQuestionnaireCategory } from '../investment-questionnaire/investmentQuestionnaire.entity';
+import { InvestmentQuestionnaireCategory } from '../investment-questionnaire/entities/investmentQuestionnaire.entity';
 import { UserInvestmentQuestionnaireService } from '../user-investment-questionnaire/userInvestmentQuestionnaire.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { ValidationError } from 'apollo-server-core';

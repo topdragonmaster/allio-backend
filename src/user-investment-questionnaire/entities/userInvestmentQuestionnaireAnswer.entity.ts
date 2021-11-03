@@ -1,8 +1,8 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { InvestmentQuestionnaire } from '../investment-questionnaire/investmentQuestionnaire.entity';
-import { InvestmentQuestionnaireOption } from '../investment-questionnaire/investmentQuestionnaireOption.entity';
-import { Base } from '../shared/base.entity';
+import { InvestmentQuestionnaire } from '../../investment-questionnaire/entities/investmentQuestionnaire.entity';
+import { InvestmentQuestionnaireOption } from '../../investment-questionnaire/entities/investmentQuestionnaireOption.entity';
+import { Base } from '../../shared/base.entity';
 
 @ObjectType()
 @Entity()

@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { GetUserQuestionnaireAnswerArgs } from './dto/getUserQuestionnaireAnswer.args';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { UserInvestmentQuestionnaireAnswer } from './userInvestmentQuestionnaireAnswer.entity';
-import { EntityRepository, QueryOrder, MikroORM } from '@mikro-orm/core';
+import { UserInvestmentQuestionnaireAnswer } from './entities/userInvestmentQuestionnaireAnswer.entity';
+import { QueryOrder, MikroORM } from '@mikro-orm/core';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import { SetUserQuestionnaireAnswerArgs } from './dto/setUserQuestionnaireAnswer.args';
-import { InvestmentQuestionnaire } from '../investment-questionnaire/investmentQuestionnaire.entity';
-import { InvestmentQuestionnaireOption } from '../investment-questionnaire/investmentQuestionnaireOption.entity';
+import { InvestmentQuestionnaire } from '../investment-questionnaire/entities/investmentQuestionnaire.entity';
+import { InvestmentQuestionnaireOption } from '../investment-questionnaire/entities/investmentQuestionnaireOption.entity';
 import { NotFoundError } from '../shared/errors';
 import { FilterQuery, Populate, Loaded } from '@mikro-orm/core/typings';
 import { QuestionnaireNotFound } from '../investment-questionnaire/utils/errors';
@@ -14,19 +15,21 @@ import {
   EntityManager,
   QueryBuilder,
 } from '@mikro-orm/postgresql';
+import { BaseService } from '../shared/base.service';
+import { InvestmentQuestionnaireService } from '../investment-questionnaire/investmentQuestionnaire.service';
+import { InvestmentQuestionnaireOptionService } from '../investment-questionnaire/investmentQuestionnaireOption.service';
 
 @Injectable()
-export class UserInvestmentQuestionnaireService {
+export class UserInvestmentQuestionnaireService extends BaseService<UserInvestmentQuestionnaireAnswer> {
   private readonly em: EntityManager;
   public constructor(
     @InjectRepository(UserInvestmentQuestionnaireAnswer)
     private readonly userQuestionnaireAnswerRepo: EntityRepository<UserInvestmentQuestionnaireAnswer>,
-    @InjectRepository(InvestmentQuestionnaire)
-    private readonly investmentQuestionnaireRepo: EntityRepository<InvestmentQuestionnaire>,
-    @InjectRepository(InvestmentQuestionnaireOption)
-    private readonly investmentQuestionnaireOptionRepo: EntityRepository<InvestmentQuestionnaireOption>,
+    private readonly investmentQuestionnaireService: InvestmentQuestionnaireService,
+    private readonly investmentQuestionnaireOptionService: InvestmentQuestionnaireOptionService,
     private readonly orm: MikroORM<PostgreSqlDriver>
   ) {
+    super(userQuestionnaireAnswerRepo);
     this.em = this.orm.em;
   }
 
@@ -104,7 +107,7 @@ export class UserInvestmentQuestionnaireService {
 
     const { questionnaireId, answer, selectedOptionIdList = [] } = args;
     const questionnaire: InvestmentQuestionnaire =
-      await this.investmentQuestionnaireRepo.findOneOrFail(
+      await this.investmentQuestionnaireService.findOneOrFail(
         { id: questionnaireId },
         { failHandler: (): any => new QuestionnaireNotFound() }
       );
@@ -132,7 +135,7 @@ export class UserInvestmentQuestionnaireService {
     }
 
     const questionnaireOptionList: InvestmentQuestionnaireOption[] =
-      await this.investmentQuestionnaireOptionRepo.find({
+      await this.investmentQuestionnaireOptionService.find({
         id: { $in: selectedOptionIdList },
         questionnaire,
       });

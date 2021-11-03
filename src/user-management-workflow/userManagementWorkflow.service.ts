@@ -2,18 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { ManagementWorkflow } from '../management-workflow/entities/managementWorkflow.entity';
 import { NotFoundError } from '../shared/errors';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/core';
+import { EntityRepository } from '@mikro-orm/postgresql';
 import { UserManagementWorkflow } from './entities/userManagementWorkflow.entity';
 import { SetUserManagementWorkflowArgs } from './dto/setUserManagementWorkflow.args';
+import { BaseService } from '../shared/base.service';
+import { ManagementWorkflowService } from '../management-workflow/managementWorkflow.service';
 
 @Injectable()
-export class UserManagementWorkflowService {
+export class UserManagementWorkflowService extends BaseService<UserManagementWorkflow> {
   public constructor(
-    @InjectRepository(ManagementWorkflow)
-    private readonly managementWorkflowRepo: EntityRepository<ManagementWorkflow>,
+    private readonly managementWorkflowService: ManagementWorkflowService,
     @InjectRepository(UserManagementWorkflow)
     private readonly userManagementWorkflowRepo: EntityRepository<UserManagementWorkflow>
-  ) {}
+  ) {
+    super(userManagementWorkflowRepo);
+  }
 
   public async getUserManagementWorkflow(
     userId: string
@@ -22,15 +25,14 @@ export class UserManagementWorkflowService {
       throw new NotFoundError('User not found');
     }
 
-    const userManagementWorkflow: UserManagementWorkflow =
-      await this.userManagementWorkflowRepo.findOne(
-        { userId },
-        {
-          populate: {
-            managementWorkflow: true,
-          },
-        }
-      );
+    const userManagementWorkflow: UserManagementWorkflow = await this.findOne(
+      { userId },
+      {
+        populate: {
+          managementWorkflow: true,
+        },
+      }
+    );
 
     return userManagementWorkflow?.managementWorkflow;
   }
@@ -45,7 +47,7 @@ export class UserManagementWorkflowService {
 
     const { managementWorkflowId } = args;
     const managementWorkflow: ManagementWorkflow =
-      await this.managementWorkflowRepo.findOneOrFail(
+      await this.managementWorkflowService.findOneOrFail(
         { id: managementWorkflowId },
         {
           failHandler: (): any =>
@@ -53,11 +55,12 @@ export class UserManagementWorkflowService {
         }
       );
 
-    let userManagementWorkflow: UserManagementWorkflow =
-      await this.userManagementWorkflowRepo.findOne({ userId });
+    let userManagementWorkflow: UserManagementWorkflow = await this.findOne({
+      userId,
+    });
 
     if (!userManagementWorkflow) {
-      userManagementWorkflow = this.userManagementWorkflowRepo.create({
+      userManagementWorkflow = this.create({
         userId,
         managementWorkflow,
       });
@@ -65,9 +68,7 @@ export class UserManagementWorkflowService {
       userManagementWorkflow.managementWorkflow = managementWorkflow;
     }
 
-    await this.userManagementWorkflowRepo.persistAndFlush(
-      userManagementWorkflow
-    );
+    await this.persistAndFlush(userManagementWorkflow);
 
     return userManagementWorkflow;
   }

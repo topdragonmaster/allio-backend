@@ -4,13 +4,15 @@ import { UserManagementWorkflow } from './entities/userManagementWorkflow.entity
 import { UserManagementWorkflowResolver } from './userManagementWorkflow.resolver';
 import { UserManagementWorkflowService } from './userManagementWorkflow.service';
 import { AuthModule } from '../auth/auth.module';
-import { ManagementWorkflow } from '../management-workflow/entities/managementWorkflow.entity';
+import { ManagementWorkflowModule } from '../management-workflow/managementWorkflow.module';
 
 @Module({
   imports: [
-    MikroOrmModule.forFeature([UserManagementWorkflow, ManagementWorkflow]),
+    MikroOrmModule.forFeature([UserManagementWorkflow]),
     AuthModule,
+    ManagementWorkflowModule,
   ],
   providers: [UserManagementWorkflowResolver, UserManagementWorkflowService],
+  exports: [UserManagementWorkflowService],
 })
 export class UserManagementWorkflowModule {}

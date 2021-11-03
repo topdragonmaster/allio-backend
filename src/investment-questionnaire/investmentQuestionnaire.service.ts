@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   InvestmentQuestionnaire,
   InvestmentQuestionnaireCategory,
-} from './investmentQuestionnaire.entity';
+} from './entities/investmentQuestionnaire.entity';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { FindOptions, QueryOrder } from '@mikro-orm/core';
 import { EntityRepository } from '@mikro-orm/postgresql';

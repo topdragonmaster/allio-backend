@@ -1,5 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { UserInvestmentQuestionnaireAnswer } from './userInvestmentQuestionnaireAnswer.entity';
+import { UserInvestmentQuestionnaireAnswer } from './entities/userInvestmentQuestionnaireAnswer.entity';
 import { UserInvestmentQuestionnaireService } from './userInvestmentQuestionnaire.service';
 import { GetUserQuestionnaireAnswerArgs } from './dto/getUserQuestionnaireAnswer.args';
 import { UseGuards } from '@nestjs/common';

@@ -7,5 +7,6 @@ import { ManagementWorkflowService } from './managementWorkflow.service';
 @Module({
   imports: [MikroOrmModule.forFeature([ManagementWorkflow])],
   providers: [ManagementWorkflowResolver, ManagementWorkflowService],
+  exports: [ManagementWorkflowService],
 })
 export class ManagementWorkflowModule {}

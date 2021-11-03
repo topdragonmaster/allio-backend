@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Ability } from '@casl/ability';
 import { CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
 import { ExecutionContext } from '@nestjs/common';
-import { UserInvestmentQuestionnaireAnswer } from '../user-investment-questionnaire/userInvestmentQuestionnaireAnswer.entity';
+import { UserInvestmentQuestionnaireAnswer } from '../user-investment-questionnaire/entities/userInvestmentQuestionnaireAnswer.entity';
 import { UserRiskLevel } from '../risk-level/entities/userRiskLevel.entity';
 import { UserAssetClass } from '../user-asset-class/entities/userAssetClass.entity';
 import { UserManagementWorkflow } from '../user-management-workflow/entities/userManagementWorkflow.entity';

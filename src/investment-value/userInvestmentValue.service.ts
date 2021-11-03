@@ -4,7 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { BaseService } from '../shared/base.service';
 import { NotFoundError } from '../shared/errors';
 import { UserInvestmentValue } from './entities/userInvestmentValue.entity';
-import { InvestmentQuestionnaireCategory } from '../investment-questionnaire/investmentQuestionnaire.entity';
+import { InvestmentQuestionnaireCategory } from '../investment-questionnaire/entities/investmentQuestionnaire.entity';
 import { UserInvestmentQuestionnaireService } from '../user-investment-questionnaire/userInvestmentQuestionnaire.service';
 import { ApolloError } from 'apollo-server-core';
 import { InvestmentValueService } from './investmentValue.service';
