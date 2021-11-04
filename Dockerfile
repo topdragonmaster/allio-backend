@@ -6,9 +6,9 @@ RUN npm i -g pnpm
 
 COPY package.json ./
 COPY pnpm-lock.yaml ./
-RUN pnpm install
-
 COPY . .
+RUN pnpm install
+RUN pnpm prebuild && pnpm build
 
 FROM node:16.9-buster AS prod
 
@@ -18,6 +18,6 @@ RUN npm i -g pnpm
 
 COPY package.json ./
 COPY pnpm-lock.yaml ./
-RUN pnpm install --production
-
 COPY . .
+RUN pnpm install --production
+RUN pnpm prebuild && pnpm build
