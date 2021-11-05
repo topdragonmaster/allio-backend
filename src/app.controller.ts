@@ -14,7 +14,7 @@ export class AppController {
   @ApiBearerAuth()
   @UseGuards(PoliciesGuard)
   @Get()
-  getHello(@CurrentUser() user: RequestUserInfo): RequestUserInfo {
+  getCurrentUserInfo(@CurrentUser() user: RequestUserInfo): RequestUserInfo {
     return user;
   }
 
