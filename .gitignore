@@ -43,3 +43,6 @@ secrets
 # local script
 start.sh
 cleanup.sh
+
+# control plane
+agent.json
