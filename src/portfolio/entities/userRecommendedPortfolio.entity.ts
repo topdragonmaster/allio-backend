@@ -21,6 +21,6 @@ export class UserRecommendedPortfolio extends Base<
   asset: string;
 
   @Field()
-  @Property()
+  @Property({ columnType: 'decimal' })
   weight: number;
 }

@@ -43,13 +43,10 @@ export class UserRiskLevelService extends BaseService<UserRiskLevel> {
           ],
         }
       );
-    if (!answerOptions.length) {
+    if (!answerOptions.length || !answerOptions[0]?.selectedOption) {
       throw new NotFoundError('User answer not found');
     }
-    const order = await answerOptions[0]?.selectedOption?.order;
-    if (!order) {
-      throw new NotFoundError('User answer not found');
-    }
+    const order = answerOptions[0].selectedOption.order;
     return this.HighestRiskLevel - order;
   }
 

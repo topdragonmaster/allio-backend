@@ -19,7 +19,8 @@ export class UserManagementWorkflowService extends BaseService<UserManagementWor
   }
 
   public async getUserManagementWorkflow(
-    userId: string
+    userId: string,
+    throwOnMissing = false
   ): Promise<ManagementWorkflow | null> {
     if (!userId) {
       throw new NotFoundError('User not found');
@@ -33,6 +34,10 @@ export class UserManagementWorkflowService extends BaseService<UserManagementWor
         },
       }
     );
+
+    if (throwOnMissing && !userManagementWorkflow) {
+      throw new NotFoundError('Management workflow not found');
+    }
 
     return userManagementWorkflow?.managementWorkflow;
   }

@@ -9,6 +9,8 @@ import {
   New,
   Populate,
   QueryOrderMap,
+  DeleteOptions,
+  DriverException,
 } from '@mikro-orm/core';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import {
@@ -21,11 +23,13 @@ import {
 @Injectable()
 export abstract class BaseService<T> {
   protected logger: Logger;
-  constructor(private readonly genericRepository: EntityRepository<T>) {}
+  constructor(private readonly genericRepository: EntityRepository<T>) {
+    this.catchError = this.catchError.bind(this);
+  }
 
-  private catchError(err: Error): void {
-    this.logger.error(err);
-    throw new BadRequestException(err);
+  private catchError(err: DriverException): void {
+    this.logger.error(JSON.stringify(err));
+    throw new BadRequestException('Database exception');
   }
 
   findAll<P extends Populate<T> = any>(
@@ -183,5 +187,14 @@ export abstract class BaseService<T> {
     } catch (err) {
       this.catchError(err);
     }
+  }
+
+  async nativeDelete(
+    where: FilterQuery<T>,
+    options?: DeleteOptions<T>
+  ): Promise<number> {
+    return this.genericRepository
+      .nativeDelete(where, options)
+      .catch(this.catchError) as Promise<number>;
   }
 }

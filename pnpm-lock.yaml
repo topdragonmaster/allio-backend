@@ -8,6 +8,7 @@ specifiers:
   '@mikro-orm/migrations': ^4.5.9
   '@mikro-orm/nestjs': ^4.3.1
   '@mikro-orm/postgresql': ^4.5.9
+  '@nestjs/axios': ^0.0.3
   '@nestjs/cli': ^8.0.0
   '@nestjs/common': ^8.0.0
   '@nestjs/config': ^1.0.1
@@ -33,6 +34,7 @@ specifiers:
   amazon-cognito-identity-js: ^5.1.0
   apollo-server-core: ^3.3.0
   apollo-server-fastify: ^3.3.0
+  axios: ^0.24.0
   chokidar: ^3.5.2
   class-transformer: ^0.4.0
   class-validator: ^0.13.1
@@ -65,6 +67,7 @@ dependencies:
   '@mikro-orm/migrations': 4.5.9_@mikro-orm+core@4.5.9
   '@mikro-orm/nestjs': 4.3.1_c7ca310874dac987dc54e248601ee218
   '@mikro-orm/postgresql': 4.5.9_c5924a60946be4b9f3a0784c71d54059
+  '@nestjs/axios': 0.0.3_e2399148d990aa1f9a4b6ba2ac7a5b74
   '@nestjs/common': 8.0.6_7de7ece315067f012f2001b6a7f20971
   '@nestjs/config': 1.0.1_e2399148d990aa1f9a4b6ba2ac7a5b74
   '@nestjs/core': 8.0.6_a4d6c832897073857f471f32139e452f
@@ -78,6 +81,7 @@ dependencies:
   amazon-cognito-identity-js: 5.1.0
   apollo-server-core: 3.3.0_graphql@15.6.0
   apollo-server-fastify: 3.3.0_fastify@3.20.2+graphql@15.6.0
+  axios: 0.24.0
   chokidar: 3.5.2
   class-transformer: 0.4.0
   class-validator: 0.13.1
@@ -1221,6 +1225,21 @@ packages:
 
   /@napi-rs/triples/1.0.3:
     resolution: {integrity: sha512-jDJTpta+P4p1NZTFVLHJ/TLFVYVcOqv6l8xwOeBKNPMgY/zDYH/YH7SJbvrr/h1RcS9GzbPcLKGzpuK9cV56UA==}
+
+  /@nestjs/axios/0.0.3_e2399148d990aa1f9a4b6ba2ac7a5b74:
+    resolution: {integrity: sha512-Cc+D2S2uesthRpalmZEPdm5wF2N9ji4l9Wsb2vFaug/CVWg2BoegHm0L1jzFUL+6kS+mXWSFvwXJmofv+7bajw==}
+    peerDependencies:
+      '@nestjs/common': ^7.0.0 || ^8.0.0
+      reflect-metadata: ^0.1.12
+      rxjs: ^6.0.0 || ^7.0.0
+    dependencies:
+      '@nestjs/common': 8.0.6_7de7ece315067f012f2001b6a7f20971
+      axios: 0.23.0
+      reflect-metadata: 0.1.13
+      rxjs: 7.3.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
 
   /@nestjs/cli/8.1.1:
     resolution: {integrity: sha512-Jo/vYyrDHJhRIoFevO+A955KX7aLSAV6gn0sbIJBDTKiha1yxfgEbHOk8qP24gNFLwiDn2CKbwph2g6z0v/mNw==}
@@ -2701,7 +2720,23 @@ packages:
   /axios/0.21.1:
     resolution: {integrity: sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==}
     dependencies:
-      follow-redirects: 1.14.2
+      follow-redirects: 1.14.5
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /axios/0.23.0:
+    resolution: {integrity: sha512-NmvAE4i0YAv5cKq8zlDoPd1VLKAqX5oLuZKs8xkJa4qi6RGn0uhCYFjWtHHC9EM/MwOwYWOs53W+V0aqEXq1sg==}
+    dependencies:
+      follow-redirects: 1.14.5
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /axios/0.24.0:
+    resolution: {integrity: sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==}
+    dependencies:
+      follow-redirects: 1.14.5
     transitivePeerDependencies:
       - debug
     dev: false
@@ -4280,8 +4315,8 @@ packages:
     resolution: {integrity: sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==}
     dev: true
 
-  /follow-redirects/1.14.2:
-    resolution: {integrity: sha512-yLR6WaE2lbF0x4K2qE2p9PEXKLDjUjnR/xmjS3wHAYxtlsI9MLLBJUZirAHKzUZDGLxje7w/cXR49WOUo4rbsA==}
+  /follow-redirects/1.14.5:
+    resolution: {integrity: sha512-wtphSXy7d4/OR+MvIFbCVBDzZ5520qV8XfPklSN5QtxuMUJZ+b0Wnst1e1lCDocfzuCkHqj8k0FpZqO+UIaKNA==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
