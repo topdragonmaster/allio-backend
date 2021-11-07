@@ -91,6 +91,7 @@ type Query {
   getUserInvestmentQuestionnaireAnswers(questionnaireId: String, userId: String): [UserInvestmentQuestionnaireAnswer!]!
   getUserInvestmentValueList(userId: String): [UserInvestmentValue!]!
   getUserManagementWorkflow(userId: String): ManagementWorkflow
+  getUserRecommendedPortfolio(userId: String): [UserRecommendedPortfolio!]!
   getUserRiskLevel(userId: String): UserRiskLevel!
 }
 
@@ -191,6 +192,16 @@ type UserManagementWorkflow {
   managementWorkflow: ManagementWorkflow!
   updatedAt: DateTime!
   userId: String!
+}
+
+type UserRecommendedPortfolio {
+  active: Boolean!
+  asset: String!
+  createdAt: DateTime!
+  id: ID!
+  updatedAt: DateTime!
+  userId: String!
+  weight: Float!
 }
 
 type UserRiskLevel {

@@ -24,6 +24,7 @@ import { UserRiskLevel } from '../risk-level/entities/userRiskLevel.entity';
 import { UserAssetClass } from '../user-asset-class/entities/userAssetClass.entity';
 import { UserManagementWorkflow } from '../user-management-workflow/entities/userManagementWorkflow.entity';
 import { UserInvestmentValue } from '../investment-value/entities/userInvestmentValue.entity';
+import { UserRecommendedPortfolio } from '../portfolio/entities/userRecommendedPortfolio.entity';
 
 const resolveAction = createAliasResolver({
   [Action.MODIFY]: [Action.UPDATE, Action.DELETE],
@@ -66,6 +67,7 @@ export class CaslAbilityFactory {
         can(Action.ACCESS, UserAssetClass);
         can(Action.ACCESS, UserManagementWorkflow);
         can(Action.ACCESS, UserInvestmentValue);
+        can(Action.READ, UserRecommendedPortfolio);
       }
     }
 

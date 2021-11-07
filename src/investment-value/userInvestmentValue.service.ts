@@ -129,10 +129,6 @@ export class UserInvestmentValueService extends BaseService<UserInvestmentValue>
       { populate: { investmentValue: true } }
     );
 
-    if (!userInvestmentValueList.length) {
-      throw new NotFoundError('User investment value not found');
-    }
-
     return userInvestmentValueList;
   }
 }

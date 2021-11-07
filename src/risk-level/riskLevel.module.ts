@@ -15,6 +15,6 @@ import { UserInvestmentQuestionnaireModule } from '../user-investment-questionna
     UserInvestmentQuestionnaireModule,
   ],
   providers: [RiskLevelService, UserRiskLevelService, RiskLevelResolver],
-  exports: [UserRiskLevelService],
+  exports: [UserRiskLevelService, RiskLevelService],
 })
 export class RiskLevelModule {}

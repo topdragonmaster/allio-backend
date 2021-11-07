@@ -11,6 +11,10 @@ import { UserManagementWorkflowModule } from '../user-management-workflow/userMa
 import { ManagementWorkflowModule } from '../management-workflow/managementWorkflow.module';
 import { UserInvestmentQuestionnaireModule } from '../user-investment-questionnaire/userInvestmentQuestionnaire.module';
 import { InvestmentQuestionnaireModule } from '../investment-questionnaire/investmentQuestionnaire.module';
+import { RiskLevelModule } from '../risk-level/riskLevel.module';
+import { UserRiskLevelFactory } from './userRiskLevelFactory';
+import { PortfolioModule } from '../portfolio/portfolio.module';
+import { UserRecommendedPortfolioFactory } from './userRecommendedPortfolioFactory';
 
 @Module({
   imports: [
@@ -20,11 +24,15 @@ import { InvestmentQuestionnaireModule } from '../investment-questionnaire/inves
     ManagementWorkflowModule,
     UserInvestmentQuestionnaireModule,
     InvestmentQuestionnaireModule,
+    RiskLevelModule,
+    PortfolioModule,
   ],
   providers: [
     DatabaseSeeder,
     UserQuestionnaireAnswerFactory,
     UserManagementWorkflowFactory,
+    UserRiskLevelFactory,
+    UserRecommendedPortfolioFactory,
     SeedConfig,
   ],
 })

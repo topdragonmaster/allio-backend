@@ -18,6 +18,6 @@ export class SeedConfig {
       return 'c0414693-e7eb-46b3-9689-856b4de83940';
     }
 
-    return null;
+    throw new Error('Seed userId is not defined for current env');
   }
 }

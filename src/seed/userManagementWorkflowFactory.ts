@@ -22,11 +22,13 @@ export class UserManagementWorkflowFactory {
       await this.managementWorkflowService.findOneOrFail({
         key: ManagementWorkflowKey.Full,
       });
-    const userManagementWorkflow = new UserManagementWorkflow();
+    let userManagementWorkflow: UserManagementWorkflow;
     if (this.seedConfig.isDev) {
-      userManagementWorkflow.id = '6b8acfa0-1c1b-4368-94f6-05c50f65da8c';
-      userManagementWorkflow.managementWorkflow = managementWorkflow;
-      userManagementWorkflow.userId = this.seedConfig.getUserId();
+      userManagementWorkflow = this.userManagementWorkflowService.create({
+        id: '6b8acfa0-1c1b-4368-94f6-05c50f65da8c',
+        managementWorkflow,
+        userId: this.seedConfig.getUserId(),
+      });
     }
 
     await this.userManagementWorkflowService.upsert({

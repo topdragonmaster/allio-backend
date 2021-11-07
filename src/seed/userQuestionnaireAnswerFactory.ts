@@ -29,12 +29,15 @@ export class UserQuestionnaireAnswerFactory {
           },
         }
       );
-    const answer = new UserInvestmentQuestionnaireAnswer();
+
+    let answer: UserInvestmentQuestionnaireAnswer;
     if (this.seedConfig.isDev) {
-      answer.id = '0c6164bb-d6a5-4dde-b160-712bdc2082ad';
-      answer.selectedOption = option;
-      answer.userId = this.seedConfig.getUserId();
-      answer.questionnaire = option.questionnaire;
+      answer = this.userQuestionnaireService.create({
+        id: '0c6164bb-d6a5-4dde-b160-712bdc2082ad',
+        selectedOption: option,
+        userId: this.seedConfig.getUserId(),
+        questionnaire: option.questionnaire,
+      });
     }
 
     await this.userQuestionnaireService.upsert({

@@ -10,6 +10,7 @@ import { UserInvestmentValue } from '../investment-value/entities/userInvestment
 import { InvestmentValue } from '../investment-value/entities/investmentValue.entity';
 import { StaticAssetAllocation } from '../static-asset/entities/staticAssetAllocation.entity';
 import { registerEnumType } from '@nestjs/graphql';
+import { UserRecommendedPortfolio } from '../portfolio/entities/userRecommendedPortfolio.entity';
 
 export class RegisterRequestDTO {
   @ApiProperty({
@@ -252,6 +253,8 @@ export type Subjects =
   | InvestmentValue
   | StaticAssetAllocation
   | typeof StaticAssetAllocation
+  | UserRecommendedPortfolio
+  | typeof UserRecommendedPortfolio
   | 'all';
 
 export type AppAbility = Ability<[Action, Subjects]>;

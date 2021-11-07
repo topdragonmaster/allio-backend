@@ -8,6 +8,7 @@ import { PortfolioResolver } from './portfolio.resolver';
 import { UserManagementWorkflowModule } from '../user-management-workflow/userManagementWorkflow.module';
 import { RiskLevelModule } from '../risk-level/riskLevel.module';
 import { InvestmentValueModule } from '../investment-value/investmentValue.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { InvestmentValueModule } from '../investment-value/investmentValue.modul
     UserManagementWorkflowModule,
     RiskLevelModule,
     InvestmentValueModule,
+    AuthModule,
   ],
   providers: [
     OptimizerPortfolioClient,

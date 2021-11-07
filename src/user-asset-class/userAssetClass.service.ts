@@ -7,6 +7,8 @@ import { NotFoundError } from '../shared/errors';
 import { SetUserAssetClassListResponse } from './dto/setUserAssetClassList.response';
 import { SetUserAssetClassListArgs } from './dto/setUserAssetClassList.args';
 import { UserRecommendedPortfolioService } from '../portfolio/userRecommendedPortfolio.service';
+import { CASH_ASSET_CLASS_NAME, MIN_ASSET_CLASS_COUNT } from './constants';
+import { UserInputError } from 'apollo-server-core';
 
 @Injectable()
 export class UserAssetClassService {
@@ -62,12 +64,22 @@ export class UserAssetClassService {
     }
 
     const assetClassNameList: string[] = [];
+    let hasCashAssetClass = false;
     const userAssetClassList: UserAssetClass[] = assetClassList.map(
       (assetClass) => {
         assetClassNameList.push(assetClass.name);
+        if (assetClass.name === CASH_ASSET_CLASS_NAME) {
+          hasCashAssetClass = true;
+        }
         return this.userAssetClassRepo.create({ userId, assetClass });
       }
     );
+
+    if (assetClassList.length <= MIN_ASSET_CLASS_COUNT && hasCashAssetClass) {
+      throw new UserInputError(
+        `Min ${MIN_ASSET_CLASS_COUNT} asset classes must be passed in addition to cash`
+      );
+    }
 
     await this.userRecommendedPortfolioService.setRecommendedPortfolio(
       userId,

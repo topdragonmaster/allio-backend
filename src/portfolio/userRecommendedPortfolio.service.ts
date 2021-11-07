@@ -18,6 +18,8 @@ import {
 } from '../management-workflow/entities/managementWorkflow.entity';
 import { UserInvestmentValueService } from '../investment-value/userInvestmentValue.service';
 import { BadRequestError, NotFoundError } from '../shared/errors';
+import { UserInvestmentValue } from '../investment-value/entities/userInvestmentValue.entity';
+import { QueryOrder } from '@mikro-orm/core';
 
 @Injectable()
 export class UserRecommendedPortfolioService extends BaseService<UserRecommendedPortfolio> {
@@ -34,10 +36,27 @@ export class UserRecommendedPortfolioService extends BaseService<UserRecommended
     this.logger = new Logger(UserRecommendedPortfolio.name);
   }
 
+  public async getRecommendedPortfolio(
+    userId: string
+  ): Promise<UserRecommendedPortfolio[]> {
+    if (!userId) {
+      throw new NotFoundError('User not found');
+    }
+
+    return this.userRecommendedPortfolioRepo.find(
+      { userId },
+      {
+        orderBy: {
+          weight: QueryOrder.ASC,
+        },
+      }
+    );
+  }
+
   public async setRecommendedPortfolio(
     userId: string,
     assetClassNameList: string[]
-  ) {
+  ): Promise<void> {
     if (!userId) {
       throw new NotFoundError('User not found');
     }
@@ -55,6 +74,16 @@ export class UserRecommendedPortfolioService extends BaseService<UserRecommended
       workflow: managementWorkflow.key.toLowerCase() as PortfolioWorkflow,
       risk_tolerance: userRiskLevel.riskLevel.riskLevel,
     };
+
+    const investmentValueList: UserInvestmentValue[] =
+      await this.userInvestmentValueService.getUserInvestmentValueList(userId);
+
+    if (investmentValueList.length) {
+      // TODO uncomment when optimizer is fixed
+      // props.investment_values = investmentValueList.map(
+      //   (item) => item.investmentValue.investmentValue
+      // );
+    }
 
     if (managementWorkflow.key === ManagementWorkflowKey.Partial) {
       props.groups = assetClassNameList;

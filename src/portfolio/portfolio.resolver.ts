@@ -1,4 +1,38 @@
-import { Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
+import { UserRecommendedPortfolio } from './entities/userRecommendedPortfolio.entity';
+import { UseGuards } from '@nestjs/common';
+import { PoliciesGuard } from '../auth/policies.guard';
+import { UserRecommendedPortfolioService } from './userRecommendedPortfolio.service';
+import { Action, RequestUserInfo } from '../auth/types';
+import { ForbiddenError } from 'apollo-server-core';
+import { GetUserRecommendedPortfolioAssetsArgs } from './dto/getUserRecommendedPortfolioAssets.args';
+import { CurrentUser } from '../auth/decorator/currentUser';
+import { CaslAbilityFactory } from '../auth/casl-ability.factory';
 
+@UseGuards(PoliciesGuard)
 @Resolver()
-export class PortfolioResolver {}
+export class PortfolioResolver {
+  public constructor(
+    private readonly userRecommendedPortfolioService: UserRecommendedPortfolioService,
+    private readonly caslAbilityFactory: CaslAbilityFactory
+  ) {}
+
+  @Query(() => [UserRecommendedPortfolio], {
+    name: 'getUserRecommendedPortfolio',
+  })
+  public async getUserRecommendedPortfolio(
+    @Args() args: GetUserRecommendedPortfolioAssetsArgs,
+    @CurrentUser() requestUser: RequestUserInfo
+  ): Promise<UserRecommendedPortfolio[]> {
+    const userId = args.userId || requestUser.uuid;
+    await this.caslAbilityFactory.canAccessOrFail({
+      requestUser,
+      userId,
+      action: Action.READ,
+      subject: UserRecommendedPortfolio,
+      ForbiddenError,
+    });
+
+    return this.userRecommendedPortfolioService.getRecommendedPortfolio(userId);
+  }
+}
