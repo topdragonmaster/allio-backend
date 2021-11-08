@@ -47,7 +47,7 @@ specifiers:
   jest: ^27.0.6
   jwks-rsa: ^2.0.4
   node-fetch: ^2.6.1
-  nodemon: ^2.0.13
+  nodemon: ^2.0.14
   passport: ^0.4.1
   passport-jwt: ^4.0.0
   prettier: ^2.3.2
@@ -116,7 +116,7 @@ devDependencies:
   eslint-config-prettier: 8.3.0_eslint@7.32.0
   eslint-plugin-prettier: 3.4.1_5a48a349ffec60f5257b5f148f5199c3
   jest: 27.0.6
-  nodemon: 2.0.13
+  nodemon: 2.0.14
   prettier: 2.3.2
   supertest: 6.1.6
 
@@ -1225,6 +1225,7 @@ packages:
 
   /@napi-rs/triples/1.0.3:
     resolution: {integrity: sha512-jDJTpta+P4p1NZTFVLHJ/TLFVYVcOqv6l8xwOeBKNPMgY/zDYH/YH7SJbvrr/h1RcS9GzbPcLKGzpuK9cV56UA==}
+    dev: false
 
   /@nestjs/axios/0.0.3_e2399148d990aa1f9a4b6ba2ac7a5b74:
     resolution: {integrity: sha512-Cc+D2S2uesthRpalmZEPdm5wF2N9ji4l9Wsb2vFaug/CVWg2BoegHm0L1jzFUL+6kS+mXWSFvwXJmofv+7bajw==}
@@ -1524,6 +1525,7 @@ packages:
     resolution: {integrity: sha512-R5wEmm8nbuQU0YGGmYVjEc0OHtYsuXdpRG+Ut/3wZ9XAvQWyThN08bTh2cBJgoZxHQUPtvRfeQuxcAgLuiBISg==}
     dependencies:
       '@napi-rs/triples': 1.0.3
+    dev: false
 
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1706,6 +1708,7 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
+    dev: false
     optional: true
 
   /@swc/core-linux-x64-musl/1.2.103:
@@ -1714,6 +1717,7 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
+    dev: false
     optional: true
 
   /@swc/core-win32-arm64-msvc/1.2.103:
@@ -6384,8 +6388,8 @@ packages:
     resolution: {integrity: sha512-Qe5OUajvqrqDSy6wrWFmMwfJ0jVgwiw4T3KqmbTcZ62qW0gQkheXYhcFM1+lOVcGUoRxcEcfyvFMAnDgaF1VWw==}
     dev: true
 
-  /nodemon/2.0.13:
-    resolution: {integrity: sha512-UMXMpsZsv1UXUttCn6gv8eQPhn6DR4BW+txnL3IN5IHqrCwcrT/yWHfL35UsClGXknTH79r5xbu+6J1zNHuSyA==}
+  /nodemon/2.0.14:
+    resolution: {integrity: sha512-frcpDx+PviKEQRSYzwhckuO2zoHcBYLHI754RE9z5h1RGtrngerc04mLpQQCPWBkH/2ObrX7We9YiwVSYZpFJQ==}
     engines: {node: '>=8.10.0'}
     hasBin: true
     requiresBuild: true
