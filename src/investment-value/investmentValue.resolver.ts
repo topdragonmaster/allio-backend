@@ -1,7 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { ForbiddenError } from 'apollo-server-core';
-import { NotFoundError } from '../shared/errors';
 import { CaslAbilityFactory } from '../auth/casl-ability.factory';
 import { CurrentUser } from '../auth/decorator/currentUser';
 import { PoliciesGuard } from '../auth/policies.guard';
@@ -36,10 +35,6 @@ export class InvestmentValueResolver {
       await this.userInvestmentValueService.tryGetUserInvestmentValueList(
         userId
       );
-
-    if (!userInvestmentValueList.length) {
-      throw new NotFoundError('User investment values not found');
-    }
 
     return userInvestmentValueList;
   }

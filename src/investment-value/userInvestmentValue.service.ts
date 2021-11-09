@@ -6,7 +6,6 @@ import { NotFoundError } from '../shared/errors';
 import { UserInvestmentValue } from './entities/userInvestmentValue.entity';
 import { InvestmentQuestionnaireCategory } from '../investment-questionnaire/entities/investmentQuestionnaire.entity';
 import { UserInvestmentQuestionnaireService } from '../user-investment-questionnaire/userInvestmentQuestionnaire.service';
-import { ApolloError } from 'apollo-server-core';
 import { InvestmentValueService } from './investmentValue.service';
 
 @Injectable()
@@ -31,11 +30,10 @@ export class UserInvestmentValueService extends BaseService<UserInvestmentValue>
     // TODO: map the correct tickers
     const mapOrderToTicker = {
       0: 'NACP',
-      1: 'MAGA',
-      2: 'MAGA',
-      3: 'MAGA',
-      4: 'MAGA',
-      5: 'MAGA',
+      1: 'SHE',
+      2: 'ICLN',
+      3: 'PHO',
+      4: 'BIBL',
     };
     const answerOptions =
       await this.userInvestmentQuestionnaireService.getAnswersByQuestionnaireFilter(
@@ -52,16 +50,12 @@ export class UserInvestmentValueService extends BaseService<UserInvestmentValue>
         }
       );
 
-    if (!answerOptions.length) {
-      // if no answers found, return default MAGA
-      return ['MAGA'];
-    }
-
     const resultSet = answerOptions.reduce<Set<string>>((set, answer) => {
       const order = answer?.selectedOption?.order;
-      console.log(order);
-      const ticker = mapOrderToTicker[order] ?? 'MAGA';
-      set.add(ticker);
+      const ticker = mapOrderToTicker[order];
+      if (ticker !== undefined || ticker !== null) {
+        set.add(ticker);
+      }
       return set;
     }, new Set());
 
@@ -72,9 +66,6 @@ export class UserInvestmentValueService extends BaseService<UserInvestmentValue>
     userId: string,
     investmentValueList: string[]
   ) {
-    if (!investmentValueList.length) {
-      throw ApolloError('Bad Request');
-    }
     await this.tryRemoveUserInvestmentValue(userId);
     const investmentValueEntityList = await this.investmentValueService.find({
       investmentValue: investmentValueList,
@@ -104,10 +95,6 @@ export class UserInvestmentValueService extends BaseService<UserInvestmentValue>
       );
     } catch (err) {
       this.logger.debug(err);
-    }
-
-    if (!userInvestmentValueList.length) {
-      userInvestmentValueList = await this.getUserInvestmentValueList(userId);
     }
 
     return userInvestmentValueList;
