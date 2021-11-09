@@ -6,9 +6,10 @@ import { UserAssetClass } from './entities/userAssetClass.entity';
 import { NotFoundError } from '../shared/errors';
 import { SetUserAssetClassListResponse } from './dto/setUserAssetClassList.response';
 import { SetUserAssetClassListArgs } from './dto/setUserAssetClassList.args';
-import { UserRecommendedPortfolioService } from '../portfolio/userRecommendedPortfolio.service';
 import { CASH_ASSET_CLASS_NAME, MIN_ASSET_CLASS_COUNT } from './constants';
 import { UserInputError } from 'apollo-server-core';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { USER_ASSET_CLASS_CHANGED, UserAssetClassChangedEvent } from './events';
 
 @Injectable()
 export class UserAssetClassService {
@@ -17,7 +18,7 @@ export class UserAssetClassService {
     private readonly assetClassRepo: EntityRepository<AssetClass>,
     @InjectRepository(UserAssetClass)
     private readonly userAssetClassRepo: EntityRepository<UserAssetClass>,
-    private readonly userRecommendedPortfolioService: UserRecommendedPortfolioService
+    private readonly eventEmitter: EventEmitter2
   ) {}
 
   public async getUserAssetClassList(userId: string): Promise<AssetClass[]> {
@@ -63,11 +64,9 @@ export class UserAssetClassService {
       });
     }
 
-    const assetClassNameList: string[] = [];
     let hasCashAssetClass = false;
     const userAssetClassList: UserAssetClass[] = assetClassList.map(
       (assetClass) => {
-        assetClassNameList.push(assetClass.name);
         if (assetClass.name === CASH_ASSET_CLASS_NAME) {
           hasCashAssetClass = true;
         }
@@ -81,12 +80,13 @@ export class UserAssetClassService {
       );
     }
 
-    await this.userRecommendedPortfolioService.setRecommendedPortfolio(
-      userId,
-      assetClassNameList
-    );
     await this.userAssetClassRepo.nativeDelete({ userId });
     await this.userAssetClassRepo.persistAndFlush(userAssetClassList);
+
+    await this.eventEmitter.emitAsync(
+      USER_ASSET_CLASS_CHANGED,
+      new UserAssetClassChangedEvent(userId)
+    );
 
     return new SetUserAssetClassListResponse(userId, assetClassList);
   }

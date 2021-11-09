@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
+  OptimizerPortfolioClient,
   OptimizerResponse,
   PortfolioOptimizerProps,
-  OptimizerPortfolioClient,
   PortfolioWorkflow,
 } from './optimizerPortfolioClient';
 import { BaseService } from '../shared/base.service';
@@ -20,6 +20,8 @@ import { UserInvestmentValueService } from '../investment-value/userInvestmentVa
 import { BadRequestError, NotFoundError } from '../shared/errors';
 import { UserInvestmentValue } from '../investment-value/entities/userInvestmentValue.entity';
 import { QueryOrder } from '@mikro-orm/core';
+import { UserAssetClassService } from '../user-asset-class/userAssetClass.service';
+import { AssetClass } from '../asset-class/entities/assetClass.entity';
 
 @Injectable()
 export class UserRecommendedPortfolioService extends BaseService<UserRecommendedPortfolio> {
@@ -30,7 +32,8 @@ export class UserRecommendedPortfolioService extends BaseService<UserRecommended
     private readonly userRecommendedPortfolioRepo: EntityRepository<UserRecommendedPortfolio>,
     private readonly userManagementWorkflowService: UserManagementWorkflowService,
     private readonly userRiskLevelService: UserRiskLevelService,
-    private readonly userInvestmentValueService: UserInvestmentValueService
+    private readonly userInvestmentValueService: UserInvestmentValueService,
+    private readonly userAssetClassService: UserAssetClassService
   ) {
     super(userRecommendedPortfolioRepo);
     this.logger = new Logger(UserRecommendedPortfolio.name);
@@ -53,10 +56,7 @@ export class UserRecommendedPortfolioService extends BaseService<UserRecommended
     );
   }
 
-  public async setRecommendedPortfolio(
-    userId: string,
-    assetClassNameList: string[]
-  ): Promise<void> {
+  public async setRecommendedPortfolio(userId: string): Promise<void> {
     if (!userId) {
       throw new NotFoundError('User not found');
     }
@@ -75,38 +75,44 @@ export class UserRecommendedPortfolioService extends BaseService<UserRecommended
       risk_tolerance: userRiskLevel.riskLevel.riskLevel,
     };
 
-    const investmentValueList: UserInvestmentValue[] =
-      await this.userInvestmentValueService.getUserInvestmentValueList(userId);
+    if (
+      managementWorkflow.key === ManagementWorkflowKey.Partial ||
+      managementWorkflow.key === ManagementWorkflowKey.Full
+    ) {
+      const investmentValueList: UserInvestmentValue[] =
+        await this.userInvestmentValueService.getUserInvestmentValueList(
+          userId
+        );
 
-    if (investmentValueList.length) {
-      // TODO uncomment when optimizer is fixed
-      // props.investment_values = investmentValueList.map(
-      //   (item) => item.investmentValue.investmentValue
-      // );
+      if (investmentValueList.length) {
+        props.investment_values = investmentValueList.map(
+          (item) => item.investmentValue.investmentValue
+        );
+      }
     }
 
     if (managementWorkflow.key === ManagementWorkflowKey.Partial) {
-      props.groups = assetClassNameList;
+      const assetClassList: AssetClass[] =
+        await this.userAssetClassService.getUserAssetClassList(userId);
+      props.groups = assetClassList.map((assetClass) => assetClass.name);
     }
 
-    const { portfolio, error }: OptimizerResponse =
+    const { assets, weights, errors }: OptimizerResponse =
       await this.optimizerPortfolioClient.optimizePortfolio(props);
 
-    if (!portfolio.assets || !portfolio.weights) {
-      this.logger.error(
-        error && error.length ? error : 'Unknown portfolio optimizer exception'
-      );
+    if (!assets || !weights) {
+      this.logger.error(errors || 'Unknown portfolio optimizer exception');
       throw new BadRequestError('Portfolio optimization failed');
     }
 
-    const userRecommendedPortfolioList: UserRecommendedPortfolio[] =
-      portfolio.assets.map((asset, idx) =>
+    const userRecommendedPortfolioList: UserRecommendedPortfolio[] = assets.map(
+      (asset, idx) =>
         this.create({
           userId,
           asset,
-          weight: portfolio.weights[idx],
+          weight: weights[idx],
         })
-      );
+    );
 
     const recommendedPortfolioList: UserRecommendedPortfolio[] =
       await this.find({ userId });

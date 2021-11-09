@@ -13,6 +13,7 @@ specifiers:
   '@nestjs/common': ^8.0.0
   '@nestjs/config': ^1.0.1
   '@nestjs/core': ^8.0.0
+  '@nestjs/event-emitter': ^1.0.0
   '@nestjs/graphql': ^9.0.5
   '@nestjs/passport': ^8.0.1
   '@nestjs/platform-express': ^8.0.0
@@ -71,6 +72,7 @@ dependencies:
   '@nestjs/common': 8.0.6_7de7ece315067f012f2001b6a7f20971
   '@nestjs/config': 1.0.1_e2399148d990aa1f9a4b6ba2ac7a5b74
   '@nestjs/core': 8.0.6_a4d6c832897073857f471f32139e452f
+  '@nestjs/event-emitter': 1.0.0_be74d10e7c1accb5ea6dd58471a1ec77
   '@nestjs/graphql': 9.0.5_85a98aaca42a6429cbaa20811f21954d
   '@nestjs/passport': 8.0.1_2c02db70fddcb59258fa0eed39c4b725
   '@nestjs/platform-express': 8.0.6_67f7e5db8827badcb202b1d38f6b1aea
@@ -1348,6 +1350,19 @@ packages:
       rxjs: 7.3.0
       tslib: 2.3.0
       uuid: 8.3.2
+    dev: false
+
+  /@nestjs/event-emitter/1.0.0_be74d10e7c1accb5ea6dd58471a1ec77:
+    resolution: {integrity: sha512-dRAou6G89KKYI2iyYfqSVGE6ZTC4WmHkQkFfgh88GLQg8dBqRk92ZY8CRtL2SK32SSelh9bwEDNQn9561uoypA==}
+    peerDependencies:
+      '@nestjs/common': ^7.0.0 || ^8.0.0
+      '@nestjs/core': ^7.0.0 || ^8.0.0
+      reflect-metadata: ^0.1.12
+    dependencies:
+      '@nestjs/common': 8.0.6_7de7ece315067f012f2001b6a7f20971
+      '@nestjs/core': 8.0.6_a4d6c832897073857f471f32139e452f
+      eventemitter2: 6.4.4
+      reflect-metadata: 0.1.13
     dev: false
 
   /@nestjs/graphql/9.0.5_85a98aaca42a6429cbaa20811f21954d:
@@ -3893,6 +3908,10 @@ packages:
   /etag/1.8.1:
     resolution: {integrity: sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /eventemitter2/6.4.4:
+    resolution: {integrity: sha512-HLU3NDY6wARrLCEwyGKRBvuWYyvW6mHYv72SJJAH3iJN3a6eVUvkjFkcxah1bcTgGVBBrFdIopBJPhCQFMLyXw==}
     dev: false
 
   /eventemitter3/3.1.2:

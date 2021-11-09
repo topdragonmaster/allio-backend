@@ -22,6 +22,7 @@ import {
   loadConfigModule,
   loadMikroOrmModule,
 } from './shared/utils/loadModule';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import {
     StaticAssetModule,
     InvestmentValueModule,
     PortfolioModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService, CaslAbilityFactory],

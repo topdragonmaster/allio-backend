@@ -9,6 +9,8 @@ import { UserManagementWorkflowModule } from '../user-management-workflow/userMa
 import { RiskLevelModule } from '../risk-level/riskLevel.module';
 import { InvestmentValueModule } from '../investment-value/investmentValue.module';
 import { AuthModule } from '../auth/auth.module';
+import { UserAssetClassModule } from '../user-asset-class/userAssetClass.module';
+import { UserRecommendedPortfolioListener } from './event-listeners/userRecommendedPortfolio.listener';
 
 @Module({
   imports: [
@@ -18,11 +20,13 @@ import { AuthModule } from '../auth/auth.module';
     RiskLevelModule,
     InvestmentValueModule,
     AuthModule,
+    UserAssetClassModule,
   ],
   providers: [
     OptimizerPortfolioClient,
     UserRecommendedPortfolioService,
     PortfolioResolver,
+    UserRecommendedPortfolioListener,
   ],
   exports: [UserRecommendedPortfolioService],
 })
