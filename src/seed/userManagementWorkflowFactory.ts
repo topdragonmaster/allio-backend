@@ -18,22 +18,24 @@ export class UserManagementWorkflowFactory {
   }
 
   public async create() {
-    const managementWorkflow =
-      await this.managementWorkflowService.findOneOrFail({
-        key: ManagementWorkflowKey.Full,
-      });
     let userManagementWorkflow: UserManagementWorkflow;
+    const userId = this.seedConfig.getUserId();
+
     if (this.seedConfig.isDev) {
+      const managementWorkflow =
+        await this.managementWorkflowService.findOneOrFail({
+          key: ManagementWorkflowKey.Partial,
+        });
       userManagementWorkflow = this.userManagementWorkflowService.create({
-        id: '6b8acfa0-1c1b-4368-94f6-05c50f65da8c',
         managementWorkflow,
-        userId: this.seedConfig.getUserId(),
+        userId,
       });
     }
 
-    await this.userManagementWorkflowService.upsert({
-      where: { id: userManagementWorkflow.id },
-      data: userManagementWorkflow,
-    });
+    if (userId) {
+      await this.userManagementWorkflowService.nativeDelete({ userId });
+    }
+
+    await this.userManagementWorkflowService.persist(userManagementWorkflow);
   }
 }

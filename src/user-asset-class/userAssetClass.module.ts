@@ -4,12 +4,13 @@ import { UserAssetClassService } from './userAssetClass.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { UserAssetClass } from './entities/userAssetClass.entity';
 import { AuthModule } from '../auth/auth.module';
-import { AssetClass } from '../asset-class/entities/assetClass.entity';
+import { AssetClassModule } from '../asset-class/assetClass.module';
 
 @Module({
   imports: [
-    MikroOrmModule.forFeature([UserAssetClass, AssetClass]),
+    MikroOrmModule.forFeature([UserAssetClass]),
     AuthModule,
+    AssetClassModule,
   ],
   providers: [UserAssetClassResolver, UserAssetClassService],
   exports: [UserAssetClassService],

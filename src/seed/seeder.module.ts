@@ -15,6 +15,12 @@ import { RiskLevelModule } from '../risk-level/riskLevel.module';
 import { UserRiskLevelFactory } from './userRiskLevelFactory';
 import { PortfolioModule } from '../portfolio/portfolio.module';
 import { UserRecommendedPortfolioFactory } from './userRecommendedPortfolioFactory';
+import { InvestmentValueModule } from '../investment-value/investmentValue.module';
+import { UserInvestmentValueFactory } from './userInvestmentValueFactory';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { UserAssetClassFactory } from './userAssetClassFactory';
+import { UserAssetClassModule } from '../user-asset-class/userAssetClass.module';
+import { AssetClassModule } from '../asset-class/assetClass.module';
 
 @Module({
   imports: [
@@ -26,6 +32,10 @@ import { UserRecommendedPortfolioFactory } from './userRecommendedPortfolioFacto
     InvestmentQuestionnaireModule,
     RiskLevelModule,
     PortfolioModule,
+    InvestmentValueModule,
+    UserAssetClassModule,
+    AssetClassModule,
+    EventEmitterModule.forRoot(),
   ],
   providers: [
     DatabaseSeeder,
@@ -33,6 +43,8 @@ import { UserRecommendedPortfolioFactory } from './userRecommendedPortfolioFacto
     UserManagementWorkflowFactory,
     UserRiskLevelFactory,
     UserRecommendedPortfolioFactory,
+    UserInvestmentValueFactory,
+    UserAssetClassFactory,
     SeedConfig,
   ],
 })

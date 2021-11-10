@@ -7,5 +7,6 @@ import { AssetClass } from './entities/assetClass.entity';
 @Module({
   imports: [MikroOrmModule.forFeature([AssetClass])],
   providers: [AssetClassResolver, AssetClassService],
+  exports: [AssetClassService],
 })
 export class AssetClassModule {}

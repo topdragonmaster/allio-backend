@@ -19,6 +19,6 @@ import { UserInvestmentQuestionnaireModule } from '../user-investment-questionna
     UserInvestmentValueService,
     InvestmentValueResolver,
   ],
-  exports: [UserInvestmentValueService],
+  exports: [UserInvestmentValueService, InvestmentValueService],
 })
 export class InvestmentValueModule {}

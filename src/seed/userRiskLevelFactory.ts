@@ -18,21 +18,22 @@ export class UserRiskLevelFactory {
   }
 
   public async create() {
-    const riskLevel: RiskLevel = await this.riskLevelService.findOneOrFail({
-      riskLevel: 4,
-    });
     let userRiskLevel: UserRiskLevel;
+    const userId = this.seedConfig.getUserId();
     if (this.seedConfig.isDev) {
+      const riskLevel: RiskLevel = await this.riskLevelService.findOneOrFail({
+        riskLevel: 4,
+      });
       userRiskLevel = this.userRiskLevelService.create({
-        id: '201fcac0-ebd6-40f2-90a9-be57425f5bf8',
         riskLevel,
-        userId: this.seedConfig.getUserId(),
+        userId,
       });
     }
 
-    await this.userRiskLevelService.upsert({
-      where: { id: userRiskLevel.id },
-      data: userRiskLevel,
-    });
+    if (userId) {
+      await this.userRiskLevelService.nativeDelete({ userId });
+    }
+
+    await this.userRiskLevelService.persist(userRiskLevel);
   }
 }

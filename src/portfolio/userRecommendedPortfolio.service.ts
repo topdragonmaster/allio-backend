@@ -61,7 +61,6 @@ export class UserRecommendedPortfolioService extends BaseService<UserRecommended
       await this.tryGetPortfolioOptimizerProps(userId);
 
     if (!props) {
-      this.logger.error('Failed to get portfolio optimizer props');
       return;
     }
 
@@ -133,6 +132,10 @@ export class UserRecommendedPortfolioService extends BaseService<UserRecommended
       }
 
       return props;
-    } catch (e) {}
+    } catch (e) {
+      this.logger.error(
+        `Failed to get portfolio optimizer props. Reason - ${e.message}`
+      );
+    }
   }
 }

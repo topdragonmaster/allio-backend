@@ -1,43 +1,50 @@
 import { Injectable } from '@nestjs/common';
 import { AssetClass } from '../asset-class/entities/assetClass.entity';
-import { EntityRepository, QueryOrder } from '@mikro-orm/core';
+import { QueryOrder } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { UserAssetClass } from './entities/userAssetClass.entity';
 import { NotFoundError } from '../shared/errors';
 import { SetUserAssetClassListResponse } from './dto/setUserAssetClassList.response';
 import { SetUserAssetClassListArgs } from './dto/setUserAssetClassList.args';
-import { CASH_ASSET_CLASS_NAME, MIN_ASSET_CLASS_COUNT } from './constants';
+import {
+  CASH_ASSET_CLASS_NAME,
+  MIN_ASSET_CLASS_COUNT,
+  VALUES_ASSET_CLASS_NAME,
+} from './constants';
 import { UserInputError } from 'apollo-server-core';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { USER_ASSET_CLASS_CHANGED, UserAssetClassChangedEvent } from './events';
+import { BaseService } from '../shared/base.service';
+import { EntityRepository } from '@mikro-orm/postgresql';
+import { AssetClassService } from '../asset-class/assetClass.service';
 
 @Injectable()
-export class UserAssetClassService {
+export class UserAssetClassService extends BaseService<UserAssetClass> {
   public constructor(
-    @InjectRepository(AssetClass)
-    private readonly assetClassRepo: EntityRepository<AssetClass>,
+    private readonly assetClassService: AssetClassService,
     @InjectRepository(UserAssetClass)
     private readonly userAssetClassRepo: EntityRepository<UserAssetClass>,
     private readonly eventEmitter: EventEmitter2
-  ) {}
+  ) {
+    super(userAssetClassRepo);
+  }
 
   public async getUserAssetClassList(userId: string): Promise<AssetClass[]> {
     if (!userId) {
       throw new NotFoundError('User not found');
     }
 
-    const userAssetClassList: UserAssetClass[] =
-      await this.userAssetClassRepo.find(
-        { userId },
-        {
-          populate: {
-            assetClass: true,
-          },
-          orderBy: {
-            createdAt: QueryOrder.ASC,
-          },
-        }
-      );
+    const userAssetClassList: UserAssetClass[] = await this.find(
+      { userId },
+      {
+        populate: {
+          assetClass: true,
+        },
+        orderBy: {
+          createdAt: QueryOrder.ASC,
+        },
+      }
+    );
 
     return userAssetClassList.map((userAsset) => userAsset.assetClass);
   }
@@ -51,7 +58,7 @@ export class UserAssetClassService {
     }
     const { assetClassIdList } = args;
 
-    const assetClassList = await this.assetClassRepo.find({
+    const assetClassList = await this.assetClassService.find({
       id: { $in: assetClassIdList },
     });
 
@@ -64,24 +71,27 @@ export class UserAssetClassService {
       });
     }
 
-    let hasCashAssetClass = false;
+    let minAssetClassLength = MIN_ASSET_CLASS_COUNT;
     const userAssetClassList: UserAssetClass[] = assetClassList.map(
       (assetClass) => {
-        if (assetClass.name === CASH_ASSET_CLASS_NAME) {
-          hasCashAssetClass = true;
+        if (
+          assetClass.name === CASH_ASSET_CLASS_NAME ||
+          assetClass.name === VALUES_ASSET_CLASS_NAME
+        ) {
+          minAssetClassLength++;
         }
-        return this.userAssetClassRepo.create({ userId, assetClass });
+        return this.create({ userId, assetClass });
       }
     );
 
-    if (assetClassList.length <= MIN_ASSET_CLASS_COUNT && hasCashAssetClass) {
+    if (assetClassList.length < minAssetClassLength) {
       throw new UserInputError(
-        `Min ${MIN_ASSET_CLASS_COUNT} asset classes must be passed in addition to cash`
+        `Min ${MIN_ASSET_CLASS_COUNT} asset classes must be passed in addition to cash or values`
       );
     }
 
-    await this.userAssetClassRepo.nativeDelete({ userId });
-    await this.userAssetClassRepo.persistAndFlush(userAssetClassList);
+    await this.nativeDelete({ userId });
+    await this.persistAndFlush(userAssetClassList);
 
     await this.eventEmitter.emitAsync(
       USER_ASSET_CLASS_CHANGED,
@@ -98,16 +108,16 @@ export class UserAssetClassService {
       throw new NotFoundError('User not found');
     }
 
-    const assetClassList: AssetClass[] = await this.assetClassRepo.find({});
+    const assetClassList: AssetClass[] = await this.assetClassService.find({});
     const userAssetClassList: UserAssetClass[] = assetClassList.map(
       (assetClass) =>
-        this.userAssetClassRepo.create({
+        this.create({
           userId,
           assetClass,
         })
     );
-    await this.userAssetClassRepo.nativeDelete({ userId });
-    await this.userAssetClassRepo.persistAndFlush(userAssetClassList);
+    await this.nativeDelete({ userId });
+    await this.persistAndFlush(userAssetClassList);
 
     return userAssetClassList;
   }
@@ -117,6 +127,6 @@ export class UserAssetClassService {
       throw new NotFoundError('User not found');
     }
 
-    await this.userAssetClassRepo.nativeDelete({ userId });
+    await this.nativeDelete({ userId });
   }
 }

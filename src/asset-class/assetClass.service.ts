@@ -1,17 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository, QueryOrder } from '@mikro-orm/core';
+import { QueryOrder } from '@mikro-orm/core';
 import { AssetClass } from './entities/assetClass.entity';
 import { GetAssetClassListArgs } from './dto/getAssetClassList.args';
 import { FilterQuery } from '@mikro-orm/core/typings';
 import { NotFoundError } from '../shared/errors';
+import { BaseService } from '../shared/base.service';
+import { EntityRepository } from '@mikro-orm/postgresql';
 
 @Injectable()
-export class AssetClassService {
+export class AssetClassService extends BaseService<AssetClass> {
   public constructor(
     @InjectRepository(AssetClass)
     private readonly assetClassRepo: EntityRepository<AssetClass>
-  ) {}
+  ) {
+    super(assetClassRepo);
+  }
 
   public async getAssetClassList(
     args: GetAssetClassListArgs
@@ -22,7 +26,7 @@ export class AssetClassService {
       ? { id: { $in: idList } }
       : {};
 
-    const list: AssetClass[] = await this.assetClassRepo.find(where, {
+    const list: AssetClass[] = await this.find(where, {
       orderBy: {
         createdAt: QueryOrder.ASC,
       },

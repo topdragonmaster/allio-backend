@@ -18,31 +18,45 @@ export class UserQuestionnaireAnswerFactory {
   }
 
   public async create() {
-    const option: InvestmentQuestionnaireOption =
-      await this.investmentQuestionnaireOptionService.findOneOrFail(
-        {
-          option: 'Beginner',
-        },
-        {
-          populate: {
-            questionnaire: true,
-          },
-        }
-      );
-
-    let answer: UserInvestmentQuestionnaireAnswer;
+    let answerList: UserInvestmentQuestionnaireAnswer[] = [];
+    const userId = this.seedConfig.getUserId();
     if (this.seedConfig.isDev) {
-      answer = this.userQuestionnaireService.create({
-        id: '0c6164bb-d6a5-4dde-b160-712bdc2082ad',
-        selectedOption: option,
-        userId: this.seedConfig.getUserId(),
-        questionnaire: option.questionnaire,
-      });
+      const questionnaireOptionList: InvestmentQuestionnaireOption[] =
+        await this.investmentQuestionnaireOptionService.find(
+          {
+            option: {
+              $in: [
+                'Expert',
+                // risk level
+                'Very Aggressive',
+                // investment values
+                'Minority Empowerment',
+                'Gender Diversity',
+                'Renewable Energy',
+                'Clean water',
+                'Spiritual',
+              ],
+            },
+          },
+          {
+            populate: {
+              questionnaire: true,
+            },
+          }
+        );
+      answerList = questionnaireOptionList.map((selectedOption) =>
+        this.userQuestionnaireService.create({
+          selectedOption,
+          userId,
+          questionnaire: selectedOption.questionnaire,
+        })
+      );
     }
 
-    await this.userQuestionnaireService.upsert({
-      where: { id: answer.id },
-      data: answer,
-    });
+    if (userId) {
+      await this.userQuestionnaireService.nativeDelete({ userId });
+    }
+
+    await this.userQuestionnaireService.persist(answerList);
   }
 }

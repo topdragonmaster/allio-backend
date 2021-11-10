@@ -11,6 +11,7 @@ import {
   QueryOrderMap,
   DeleteOptions,
   DriverException,
+  EntityManager,
 } from '@mikro-orm/core';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import {
@@ -196,5 +197,9 @@ export abstract class BaseService<T> {
     return this.genericRepository
       .nativeDelete(where, options)
       .catch(this.catchError) as Promise<number>;
+  }
+
+  persist(entity: AnyEntity | AnyEntity[]): EntityManager {
+    return this.genericRepository.persist(entity);
   }
 }
