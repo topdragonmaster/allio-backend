@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 import { Base } from '../../shared/base.entity';
 import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
 import { Roles } from '../../auth/types';
@@ -8,10 +9,10 @@ export class StaticAssetAllocation extends Base<StaticAssetAllocation, 'id'> {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'uuid_generate_v4()' })
   id: string;
 
-  @Property({ unique: true })
+  @Property({ columnType: 'text', unique: true })
   name: string;
 
-  @Property({ default: '' })
+  @Property({ columnType: 'text', default: '' })
   description: string = '';
 
   @Enum(() => AssetTableName)

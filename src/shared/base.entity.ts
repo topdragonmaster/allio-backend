@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 import { Entity, BaseEntity, AnyEntity, Property } from '@mikro-orm/core';
 import { Field, ObjectType } from '@nestjs/graphql';
 

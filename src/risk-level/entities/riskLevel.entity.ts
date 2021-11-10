@@ -14,6 +14,6 @@ export class RiskLevel extends Base<RiskLevel, 'id'> {
   riskLevel: number;
 
   @Field()
-  @Property()
+  @Property({ columnType: 'text' })
   description: string;
 }

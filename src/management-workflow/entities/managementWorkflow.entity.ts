@@ -14,11 +14,11 @@ export class ManagementWorkflow extends Base<ManagementWorkflow, 'id'> {
   key: ManagementWorkflowKey;
 
   @Field()
-  @Property()
+  @Property({ columnType: 'text' })
   name: string;
 
   @Field()
-  @Property()
+  @Property({ columnType: 'text' })
   description: string;
 }
 

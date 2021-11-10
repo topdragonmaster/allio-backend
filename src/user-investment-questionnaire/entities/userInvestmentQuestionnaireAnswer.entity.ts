@@ -28,7 +28,7 @@ export class UserInvestmentQuestionnaireAnswer extends Base<
   }
 
   @Field({ nullable: true })
-  @Property({ nullable: true })
+  @Property({ columnType: 'text', nullable: true })
   answer?: string;
 
   @ManyToOne(() => InvestmentQuestionnaireOption, { nullable: true })

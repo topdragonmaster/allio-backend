@@ -14,6 +14,6 @@ export class InvestmentValue extends Base<InvestmentValue, 'id'> {
   investmentValue: string;
 
   @Field()
-  @Property()
+  @Property({ columnType: 'text' })
   description: string;
 }

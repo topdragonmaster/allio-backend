@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
 import { Base } from '../../shared/base.entity';
 import { AssetTableName } from './staticAssetAllocation.entity';
@@ -13,16 +14,16 @@ export class S3StaticAsset extends Base<S3StaticAsset, 'id'> {
   @Enum({ items: () => S3StaticAssetType })
   type: S3StaticAssetType;
 
-  @Property({ default: '' })
+  @Property({ columnType: 'text', default: '' })
   description: string = '';
 
-  @Property()
+  @Property({ columnType: 'text' })
   s3Bucket: string;
 
-  @Property()
+  @Property({ columnType: 'text' })
   s3Tag: string;
 
-  @Property({ default: '' })
+  @Property({ columnType: 'text', default: '' })
   s3Region: string = '';
 
   @Property({ default: [] })

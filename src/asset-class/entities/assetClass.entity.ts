@@ -14,6 +14,6 @@ export class AssetClass extends Base<AssetClass, 'id'> {
   name: string;
 
   @Field()
-  @Property()
+  @Property({ columnType: 'text' })
   description: string;
 }

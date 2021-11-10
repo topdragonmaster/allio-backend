@@ -22,11 +22,11 @@ export class InvestmentQuestionnaire extends Base<
   id: string;
 
   @Field()
-  @Property({ unique: true })
+  @Property({ columnType: 'text', unique: true })
   name!: string;
 
   @Field()
-  @Property({ unique: true })
+  @Property({ columnType: 'text', unique: true })
   question!: string;
 
   @Field(() => InvestmentQuestionnaireCategory)

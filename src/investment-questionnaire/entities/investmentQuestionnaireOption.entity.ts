@@ -21,10 +21,10 @@ export class InvestmentQuestionnaireOption extends Base<
   order!: number;
 
   @Field()
-  @Property({ unique: true })
+  @Property({ columnType: 'text', unique: true })
   option!: string;
 
   @Field()
-  @Property()
+  @Property({ columnType: 'text' })
   description!: string;
 }
