@@ -90,4 +90,33 @@ export class UserAssetClassService {
 
     return new SetUserAssetClassListResponse(userId, assetClassList);
   }
+
+  public async setDefaultAssetClassList(
+    userId: string
+  ): Promise<UserAssetClass[]> {
+    if (!userId) {
+      throw new NotFoundError('User not found');
+    }
+
+    const assetClassList: AssetClass[] = await this.assetClassRepo.find({});
+    const userAssetClassList: UserAssetClass[] = assetClassList.map(
+      (assetClass) =>
+        this.userAssetClassRepo.create({
+          userId,
+          assetClass,
+        })
+    );
+    await this.userAssetClassRepo.nativeDelete({ userId });
+    await this.userAssetClassRepo.persistAndFlush(userAssetClassList);
+
+    return userAssetClassList;
+  }
+
+  public async cleanUpUserAssetClassList(userId: string): Promise<void> {
+    if (!userId) {
+      throw new NotFoundError('User not found');
+    }
+
+    await this.userAssetClassRepo.nativeDelete({ userId });
+  }
 }

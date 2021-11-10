@@ -7,13 +7,19 @@ import { UserManagementWorkflow } from './entities/userManagementWorkflow.entity
 import { SetUserManagementWorkflowArgs } from './dto/setUserManagementWorkflow.args';
 import { BaseService } from '../shared/base.service';
 import { ManagementWorkflowService } from '../management-workflow/managementWorkflow.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import {
+  USER_MANAGEMENT_WORKFLOW_CHANGED,
+  UserManagementWorkflowChangedEvent,
+} from './events';
 
 @Injectable()
 export class UserManagementWorkflowService extends BaseService<UserManagementWorkflow> {
   public constructor(
     private readonly managementWorkflowService: ManagementWorkflowService,
     @InjectRepository(UserManagementWorkflow)
-    private readonly userManagementWorkflowRepo: EntityRepository<UserManagementWorkflow>
+    private readonly userManagementWorkflowRepo: EntityRepository<UserManagementWorkflow>,
+    private readonly eventEmitter: EventEmitter2
   ) {
     super(userManagementWorkflowRepo);
   }
@@ -60,9 +66,12 @@ export class UserManagementWorkflowService extends BaseService<UserManagementWor
         }
       );
 
-    let userManagementWorkflow: UserManagementWorkflow = await this.findOne({
-      userId,
-    });
+    let userManagementWorkflow: UserManagementWorkflow = await this.findOne(
+      { userId },
+      { populate: { managementWorkflow: true } }
+    );
+
+    let previousWorkflow: ManagementWorkflow;
 
     if (!userManagementWorkflow) {
       userManagementWorkflow = this.create({
@@ -70,10 +79,23 @@ export class UserManagementWorkflowService extends BaseService<UserManagementWor
         managementWorkflow,
       });
     } else {
+      previousWorkflow = userManagementWorkflow.managementWorkflow;
       userManagementWorkflow.managementWorkflow = managementWorkflow;
     }
 
     await this.persistAndFlush(userManagementWorkflow);
+    if (
+      previousWorkflow?.key !== userManagementWorkflow.managementWorkflow.key
+    ) {
+      await this.eventEmitter.emitAsync(
+        USER_MANAGEMENT_WORKFLOW_CHANGED,
+        new UserManagementWorkflowChangedEvent(
+          userId,
+          userManagementWorkflow.managementWorkflow,
+          previousWorkflow
+        )
+      );
+    }
 
     return userManagementWorkflow;
   }

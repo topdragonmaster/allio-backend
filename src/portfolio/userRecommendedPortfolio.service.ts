@@ -57,44 +57,12 @@ export class UserRecommendedPortfolioService extends BaseService<UserRecommended
   }
 
   public async setRecommendedPortfolio(userId: string): Promise<void> {
-    if (!userId) {
-      throw new NotFoundError('User not found');
-    }
+    const props: PortfolioOptimizerProps =
+      await this.tryGetPortfolioOptimizerProps(userId);
 
-    const managementWorkflow: ManagementWorkflow =
-      await this.userManagementWorkflowService.getUserManagementWorkflow(
-        userId,
-        true
-      );
-
-    const userRiskLevel: UserRiskLevel =
-      await this.userRiskLevelService.getUserRiskLevel(userId);
-
-    const props: PortfolioOptimizerProps = {
-      workflow: managementWorkflow.key.toLowerCase() as PortfolioWorkflow,
-      risk_tolerance: userRiskLevel.riskLevel.riskLevel,
-    };
-
-    if (
-      managementWorkflow.key === ManagementWorkflowKey.Partial ||
-      managementWorkflow.key === ManagementWorkflowKey.Full
-    ) {
-      const investmentValueList: UserInvestmentValue[] =
-        await this.userInvestmentValueService.getUserInvestmentValueList(
-          userId
-        );
-
-      if (investmentValueList.length) {
-        props.investment_values = investmentValueList.map(
-          (item) => item.investmentValue.investmentValue
-        );
-      }
-    }
-
-    if (managementWorkflow.key === ManagementWorkflowKey.Partial) {
-      const assetClassList: AssetClass[] =
-        await this.userAssetClassService.getUserAssetClassList(userId);
-      props.groups = assetClassList.map((assetClass) => assetClass.name);
+    if (!props) {
+      this.logger.error('Failed to get portfolio optimizer props');
+      return;
     }
 
     const { assets, weights, errors }: OptimizerResponse =
@@ -118,5 +86,53 @@ export class UserRecommendedPortfolioService extends BaseService<UserRecommended
       await this.find({ userId });
     await this.delete(recommendedPortfolioList);
     await this.persistAndFlush(userRecommendedPortfolioList);
+  }
+
+  private async tryGetPortfolioOptimizerProps(
+    userId: string
+  ): Promise<PortfolioOptimizerProps | undefined> {
+    try {
+      if (!userId) {
+        throw new NotFoundError('User not found');
+      }
+
+      const managementWorkflow: ManagementWorkflow =
+        await this.userManagementWorkflowService.getUserManagementWorkflow(
+          userId,
+          true
+        );
+
+      const userRiskLevel: UserRiskLevel =
+        await this.userRiskLevelService.getUserRiskLevel(userId);
+
+      const props: PortfolioOptimizerProps = {
+        workflow: managementWorkflow.key.toLowerCase() as PortfolioWorkflow,
+        risk_tolerance: userRiskLevel.riskLevel.riskLevel,
+      };
+
+      if (
+        managementWorkflow.key === ManagementWorkflowKey.Partial ||
+        managementWorkflow.key === ManagementWorkflowKey.Full
+      ) {
+        const investmentValueList: UserInvestmentValue[] =
+          await this.userInvestmentValueService.getUserInvestmentValueList(
+            userId
+          );
+
+        if (investmentValueList.length) {
+          props.investment_values = investmentValueList.map(
+            (item) => item.investmentValue.investmentValue
+          );
+        }
+      }
+
+      if (managementWorkflow.key === ManagementWorkflowKey.Partial) {
+        const assetClassList: AssetClass[] =
+          await this.userAssetClassService.getUserAssetClassList(userId);
+        props.groups = assetClassList.map((assetClass) => assetClass.name);
+      }
+
+      return props;
+    } catch (e) {}
   }
 }
