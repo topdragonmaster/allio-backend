@@ -6,12 +6,6 @@ import { UserAssetClass } from './entities/userAssetClass.entity';
 import { NotFoundError } from '../shared/errors';
 import { SetUserAssetClassListResponse } from './dto/setUserAssetClassList.response';
 import { SetUserAssetClassListArgs } from './dto/setUserAssetClassList.args';
-import {
-  CASH_ASSET_CLASS_NAME,
-  MIN_ASSET_CLASS_COUNT,
-  VALUES_ASSET_CLASS_NAME,
-} from './constants';
-import { UserInputError } from 'apollo-server-core';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { USER_ASSET_CLASS_CHANGED, UserAssetClassChangedEvent } from './events';
 import { BaseService } from '../shared/base.service';
@@ -71,24 +65,9 @@ export class UserAssetClassService extends BaseService<UserAssetClass> {
       });
     }
 
-    let minAssetClassLength = MIN_ASSET_CLASS_COUNT;
     const userAssetClassList: UserAssetClass[] = assetClassList.map(
-      (assetClass) => {
-        if (
-          assetClass.name === CASH_ASSET_CLASS_NAME ||
-          assetClass.name === VALUES_ASSET_CLASS_NAME
-        ) {
-          minAssetClassLength++;
-        }
-        return this.create({ userId, assetClass });
-      }
+      (assetClass) => this.create({ userId, assetClass })
     );
-
-    if (assetClassList.length < minAssetClassLength) {
-      throw new UserInputError(
-        `Min ${MIN_ASSET_CLASS_COUNT} asset classes must be passed in addition to cash or values`
-      );
-    }
 
     await this.nativeDelete({ userId });
     await this.persistAndFlush(userAssetClassList);

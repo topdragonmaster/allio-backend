@@ -19,12 +19,10 @@ export class UserAssetClassFactory {
         $in: [
           'factor',
           'equity',
-          'values',
           'commodity',
           'gold',
           'real estate',
           'innovation',
-          'cash',
           'fixed income',
           'blockchain',
         ],
