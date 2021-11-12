@@ -21,6 +21,28 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+"""Supported funding frequencies"""
+enum FundingFrequency {
+  Biweekly
+  Monthly
+  Weekly
+}
+
+"""Supported funding methods"""
+enum FundingMethod {
+  OneTime
+  Recurring
+  RoundUp
+}
+
+input FundingMethodInput {
+  method: FundingMethod
+  plaidLinkedItem: UserPlaidLinkedItemInput
+  recurringFundingSetting: RecurringFundingSettingInput
+  userFundingMethodId: ID
+  userPlaidLinkedItemId: ID
+}
+
 type InvestmentQuestionnaire {
   active: Boolean!
   category: InvestmentQuestionnaireCategory!
@@ -78,6 +100,7 @@ enum ManagementWorkflowKey {
 type Mutation {
   setStaticAssetList(staticAssetInputList: [StaticAssetAllocationInput!]!): [StaticAssetResponseItem!]!
   setUserAssetClassList(assetClassIdList: [String!]!, userId: String): SetUserAssetClassListResponse!
+  setUserFundingMethod(fundingMethodList: [FundingMethodInput!]!, userId: String): [SetUserFundingMethodResponse!]!
   setUserInvestmentQuestionnaireAnswer(answer: String, questionnaireId: String!, selectedOptionIdList: [String!], userId: String): [UserInvestmentQuestionnaireAnswer!]!
   setUserManagementWorkflow(managementWorkflowId: String!, userId: String): UserManagementWorkflow!
 }
@@ -93,6 +116,19 @@ type Query {
   getUserManagementWorkflow(userId: String): ManagementWorkflow
   getUserRecommendedPortfolio(userId: String): [UserRecommendedPortfolio!]!
   getUserRiskLevel(userId: String): UserRiskLevel!
+}
+
+input RecurringFundingSettingInput {
+  amount: Float!
+  frequency: FundingFrequency!
+}
+
+type RecurringFundingSettingResponse {
+  amount: Float!
+  frequency: FundingFrequency!
+  id: ID!
+  lastTransactionId: String
+  transactionStartDate: DateTime
 }
 
 type RiskLevel {
@@ -112,6 +148,13 @@ enum Roles {
 type SetUserAssetClassListResponse {
   assetClassList: [AssetClass!]
   userId: String
+}
+
+type SetUserFundingMethodResponse {
+  id: ID!
+  method: FundingMethod!
+  plaidLinkedItem: UserPlaidLinkedItemResponse!
+  recurringFundingSetting: RecurringFundingSettingResponse
 }
 
 type StaticAsset {
@@ -192,6 +235,25 @@ type UserManagementWorkflow {
   managementWorkflow: ManagementWorkflow!
   updatedAt: DateTime!
   userId: String!
+}
+
+input UserPlaidLinkedItemInput {
+  plaidAccountId: String!
+  plaidInstitutionId: String!
+  plaidPublicToken: String!
+}
+
+type UserPlaidLinkedItemResponse {
+  accountId: String!
+  accountMask: String!
+  accountName: String!
+  accountSubtype: String!
+  accountType: String!
+  id: ID!
+  institutionId: String!
+  institutionName: String!
+  itemId: String!
+  verificationStatus: String
 }
 
 type UserRecommendedPortfolio {

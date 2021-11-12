@@ -23,6 +23,7 @@ import {
   loadMikroOrmModule,
 } from './shared/utils/loadModule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { UserFundingMethodModule } from './user-funding-method/userFundingMethod.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     InvestmentValueModule,
     PortfolioModule,
     EventEmitterModule.forRoot(),
+    UserFundingMethodModule,
   ],
   controllers: [AppController],
   providers: [AppService, CaslAbilityFactory],
